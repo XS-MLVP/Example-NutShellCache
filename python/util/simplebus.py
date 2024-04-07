@@ -17,6 +17,12 @@ class SimpleBusWrapper:
 
     def IsReqReady(self):
         return self.port["req_ready"].value == 1
+    
+    def IsReqSend(self):
+        return self.IsReqReady() and self.IsReqValid()
+    
+    def IsRespSend(self):
+        return self.IsRespReady() and self.IsRespValid()
 
     def ReqSetReady(self):
         self.port["req_ready"].value = 1

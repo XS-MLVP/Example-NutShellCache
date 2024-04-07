@@ -2,14 +2,13 @@ import xspcomm as xsp
 	
 from util.simplebus import SimpleBusWrapper
 
-import pytest
 
 class SimpleRam():
-	def __init__(self, port:xsp.XPort, clock:xsp.XClock, prefix=""):
+	def __init__(self, mBus: SimpleBusWrapper, clock:xsp.XClock):
 		self.xclk	= clock
 		self.memory = {}
 
-		self.mBus = SimpleBusWrapper(port, prefix)
+		self.mBus = mBus
 		self.mBus.ReqSetReady()
 
 		self.xclk.StepRis(self.RamStepRis)
@@ -86,4 +85,25 @@ class SimpleRam():
 			self.mBus.RespWriteData(self.mBus.cmd_writeResp, 0x114514)
 			self.write_index -= 1
 			self.write_offset = (self.write_offset + 8) % 64
+
+class SimpleRamCor():
+	def __init__(self, mBus: SimpleBusWrapper, clock:xsp.XClock):
+		self.xclk	= clock
+		self.memory = {}
+
+		self.mBus = mBus
+		self.mBus.ReqSetReady()
+
+		self.read_index = 0
+		self.read_base_addr = 0			# base addr of the cacheline to read
+		self.read_offset	= 0			# current offset in the cachline
+
+		self.write_index = 0
+		self.write_base_addr = 0
+		self.write_offset = 0
+		
+		xsp.asyncio.coroutine(self.do_task)
+
+	def do_task(self):
+		pass
 					

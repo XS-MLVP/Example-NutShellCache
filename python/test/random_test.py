@@ -9,9 +9,8 @@ from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
 from util.simpleram import SimpleRam
 from util.simplemem import MemorySIM
+from .func_checker import Func_Checker
 from dut import DUTCache
-
-from func.mmio_func import MMIO_cnt
 
 def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 	#cache.reset()
@@ -54,14 +53,16 @@ def random_check():
 	dut=DUTCache("libDPICache.so")
 	dut.init_clock("clock")
 
-	io = SimpleBusWrapper(dut.port, "io_in_")
-	coh = SimpleBusWrapper(dut.port, "io_out_coh_")
-	ram = SimpleRam(dut.port, dut.xclock, "io_out_mem_")
-	mio = SimpleRam(dut.port, dut.xclock, "io_mmio_")
+	io_bus 		= SimpleBusWrapper(dut.port, "io_in_")
+	coh_bus 	= SimpleBusWrapper(dut.port, "io_out_coh_")
+	mem_bus		= SimpleBusWrapper(dut.port, "io_out_mem_")
+	mmio_bus	= SimpleBusWrapper(dut.port, "io_mmio_")
+	ram = SimpleRam(mem_bus, dut.xclock)
+	mio = SimpleRam(mmio_bus, dut.xclock)
 	goldmem = MemorySIM()
-	cache = CacheWrapper(io, dut.xclock, dut.port)
+	cache = CacheWrapper(io_bus, dut.xclock, dut.port)
 
-	mmio_cnt = MMIO_cnt(dut.xclock, dut.port)
+	func_checker = Func_Checker(dut.xclock, io_bus, mem_bus, mmio_bus)
 
 	# reset
 	cache.reset()

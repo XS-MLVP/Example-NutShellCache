@@ -48,4 +48,8 @@ else
 	echo coverage is not on
 endif
 
+view_wave:
+	gtkwave ${TARGET}/${PROJECT}.${TRACE}
+
 clean: 
+	-@ rm -rf ${TARGET}
