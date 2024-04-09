@@ -8,7 +8,6 @@
 from collections import deque
 from util.simplebus import SimpleBusWrapper
 import xspcomm as xsp
-import pytest
 
 class MessageQueue():
     def __init__(self, clock:xsp.XClock):

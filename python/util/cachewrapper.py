@@ -29,6 +29,16 @@ class CacheWrapper():
         self.p_clk.Step(1)
         self.p_bus.ReqUnValid()
 
+    # Trigger serial read req
+    def read_req_serial(self, addrl:list):
+        for addr in addrl:
+            while (not self.p_bus.IsReqReady()):
+                self.p_clk.Step(1)
+            self.p_bus.ReqReadData(addr)
+            self.p_bus.ReqSetValid()
+            self.p_clk.Step(1)
+        self.p_bus.ReqUnValid()
+
     # Recv a read data
     def ReadRecv(self):
         while (not self.p_bus.IsRespValid()):

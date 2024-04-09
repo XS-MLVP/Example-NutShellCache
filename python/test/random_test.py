@@ -9,11 +9,66 @@ from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
 from util.simpleram import SimpleRam
 from util.simplemem import MemorySIM
-from .func_checker import Func_Checker
 from dut import DUTCache
 
+'''
+    check the functional point
+'''
+import xspcomm as xsp
+from util.message_queue import MessageQueue
+import func.mmio_func as mmio_func
+import func.cache_func as cache_func
+import pytest
+
+class FuncChecker():
+    def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
+        self.xclk       = clk
+        self.io_bus     = io_bus
+        self.mem_bus    = mem_bus
+        self.mmio_bus   = mmio_bus
+
+        self.MMIO_LB    = 0x30000000
+        self.MMIO_RB    = 0x7fffffff
+
+        self.msgq       = MessageQueue(self.xclk)
+        self.xclk.StepRis(self.__callback)
+        pass
+
+    def __callback(self, *a, **b):
+        if (self.io_bus.IsReqSend()):
+            addr = self.io_bus.port["req_bits_addr"].value
+            cmd  = self.io_bus.port["req_bits_cmd"].value
+            self.msgq.pushright(addr, cmd)
+
+            if (addr >= self.MMIO_LB and addr <= self.MMIO_RB):
+                if (self.io_bus.IsReqRead()):
+                    mmio_func.mmio_read_req()
+                if (self.io_bus.IsReqWrite()):
+                    mmio_func.mmio_write_req()
+
+        if (self.mmio_bus.IsReqSend()):
+            addr = self.io_bus.port["req_bits_addr"].value
+            cmd  = self.io_bus.port["req_bits_cmd"].value
+            req_addr, req_cmd, _ = self.msgq.peek_right()
+
+            if (addr == req_addr and cmd == req_cmd):
+                mmio_func.mmio_transmit()
+            else:
+                pytest.assume(0)
+
+        if (self.io_bus.IsRespSend()):
+            addr, cmd, ts = self.msgq.popleft()
+            if (not (addr >= self.MMIO_LB and addr <= self.MMIO_RB)):
+                cts = self.msgq.ts
+                if (cts - ts > 3):
+                    cache_func.cache_miss()
+                if (cts - ts <= 3):
+                    cache_func.cache_hit()
+            else:
+                if (not self.io_bus.IsReqReady()):
+                    mmio_func.mmio_block()
+
 def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
-	#cache.reset()
 	print("\n[Random Test]: Start Ramdom Test")
 	for i in range(ite):
 		act = random.randint(0, 1)
@@ -48,7 +103,6 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
 	print("[Random Test]: End Ramdom Test\n")
 
-
 def random_check():
 	dut=DUTCache("libDPICache.so")
 	dut.init_clock("clock")
@@ -62,7 +116,7 @@ def random_check():
 	goldmem = MemorySIM()
 	cache = CacheWrapper(io_bus, dut.xclock, dut.port)
 
-	func_checker = Func_Checker(dut.xclock, io_bus, mem_bus, mmio_bus)
+	FuncChecker(dut.xclock, io_bus, mem_bus, mmio_bus)
 
 	# reset
 	cache.reset()

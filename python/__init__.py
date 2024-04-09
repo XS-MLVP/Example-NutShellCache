@@ -1,14 +1,18 @@
 import sys, os
 sys.path.append(os.getcwd())
 
-from util.simplebus import SimpleBusWrapper
-from util.cachewrapper import CacheWrapper
-from util.simpleram import SimpleRam
-from util.simplemem import MemorySIM
-from dut import DUTCache
-
-if __name__=="__main__":
+def test():
 	from test.random_test import random_check
 	random_check()
+
+	from test.cache_hit_test import cache_hit_check
+	cache_hit_check()
+
+	from test.cache_miss_test import cache_miss_check
+	cache_miss_check()
+
+if __name__=="__main__":
+	#test()
+	pass
 
 	

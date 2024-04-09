@@ -1,0 +1,88 @@
+from util.simplebus import SimpleBusWrapper
+from util.cachewrapper import CacheWrapper
+from util.simpleram import SimpleRam
+from util.simplemem import MemorySIM
+from dut import DUTCache
+
+import xspcomm as xsp
+from util.message_queue import MessageQueue
+import func.mmio_func as mmio_func
+import func.cache_func as cache_func
+import pytest
+
+import random
+
+class MissFuncChecker():
+	def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
+		self.xclk		= clk
+		self.io_bus		= io_bus
+		self.mem_bus	= mem_bus
+		self.mmio_bus	= mmio_bus
+
+		self.lbound		= 0
+		self.rbound		= 32 * 1024
+		
+		self.msgq		= MessageQueue(self.xclk)
+		self.xclk.StepRis(self.__callback)
+	
+	def __callback(self, *a, **b):
+		if (self.io_bus.IsReqSend()):
+			addr = self.io_bus.port["req_bits_addr"].value
+			cmd  = self.io_bus.port["req_bits_cmd"].value
+			self.msgq.pushright(addr, cmd)
+
+		if (self.mem_bus.IsReqSend()):
+			addr = self.mem_bus.port["req_bits_addr"].value
+
+		if (self.io_bus.IsRespSend()):
+			addr, cmd, ts = self.msgq.popleft()
+			if (not self.io_bus.IsReqReady()):
+				cache_func.cache_miss_block()
+
+'''
+	I$ and D$ are both 32KB
+	cacheline is 64B
+'''
+def cache_miss_test(ite:int, cache:CacheWrapper, goldmen:MemorySIM):
+	addr_base = 32 * 1024
+	cacheline_size = 64
+
+	print("\n[Cache Miss Test] Running...")
+	for i in range(ite):
+		addr1 = addr_base + (4 * i) * cacheline_size
+		addr2 = addr_base + (4 * i + 1) * cacheline_size
+		addr3 = addr_base + (4 * i + 2) * cacheline_size
+		cache.read_req_serial([addr1, addr2, addr3])
+		cache.ReadRecv()
+		cache.ReadRecv()
+		cache.ReadRecv()
+		pass
+	print("\n[Cache Miss Test] Finish")
+
+	pass
+
+def cache_miss_check():
+	dut=DUTCache("libDPICache.so")
+	dut.init_clock("clock")
+	io_bus 		= SimpleBusWrapper(dut.port, "io_in_")
+	coh_bus 	= SimpleBusWrapper(dut.port, "io_out_coh_")
+	mem_bus		= SimpleBusWrapper(dut.port, "io_out_mem_")
+	mmio_bus	= SimpleBusWrapper(dut.port, "io_mmio_")
+	ram = SimpleRam(mem_bus, dut.xclock)
+	mio = SimpleRam(mmio_bus, dut.xclock)
+	goldmem = MemorySIM()
+	cache = CacheWrapper(io_bus, dut.xclock, dut.port)
+
+	cache.reset()
+	print("\n[Cache Miss Test] Preparing Env...\n")
+	addr_l = 0
+	addr_r = 32 * 1024
+	cache_line_size = 64
+	for addr in range(addr_l, addr_r, cache_line_size):
+		cache.Read(addr)
+	print("\n[Cache Miss Test] Env set Done..\n")
+
+	MissFuncChecker(dut.xclock, io_bus, mem_bus, mmio_bus)
+	cache_miss_test(10, cache, goldmem)
+
+	dut.finalize()

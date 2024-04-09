@@ -6,7 +6,7 @@ default:
 	-@mkdir ${TARGET}/util
 	@cp python/util/*.py ${TARGET}/util/
 	-@mkdir ${TARGET}/test
-	@cp python/test/*.py ${TARGET}/test/
+	@cp -r python/test/*.py ${TARGET}/test/
 	-@mkdir ${TARGET}/func
 	@cp python/func/*.py ${TARGET}/func/
 	@cp python/*.py ${TARGET}/

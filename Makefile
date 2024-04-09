@@ -24,7 +24,7 @@ release: compile
 	@make -f mk/${TLANG}.mk
 
 pytest:
-	@cd ${TARGET} && pytest --cov=func --cov-report=html
+	@cd ${TARGET} && pytest --cov=func --cov-report=html --cov-config=.coveragerc
 
 ifneq ($(VERBOSE), OFF)
 	cp *.v *.sv ${TARGET}/
