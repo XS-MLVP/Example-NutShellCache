@@ -4,6 +4,7 @@ sys.path.append(os.getcwd())
 def lc_test():
 	from test.rw_test import random_test
 	from test.rw_test import seq_test
+	from test.rw_test import mmio_test
 	from test.cache_hit_test import cache_hit_test
 	from test.cache_miss_test import cache_miss_test
 	from dut import DUTCache
@@ -26,6 +27,8 @@ def lc_test():
 	# Cache Hit
 	cache.reset()
 	goldmem.reset()
+	ram.reset()
+	mio.reset()
 	print("\n[Cache Hit Test] Preparing Env...")
 	addr_l = 0
 	addr_r = 32 * 1024
@@ -39,6 +42,8 @@ def lc_test():
 	# Cache Miss
 	cache.reset()
 	goldmem.reset()
+	ram.reset()
+	mio.reset()
 	print("\n[Cache Miss Test] Preparing Env...\n")
 	addr_l = 0
 	addr_r = 32 * 1024
@@ -50,15 +55,26 @@ def lc_test():
 	#MissFuncChecker(dut.xclock, io_bus, mem_bus, mmio_bus)
 	cache_miss_test(10, cache, goldmem)
 
-	# Random
+	# random
 	cache.reset()
 	goldmem.reset()
+	ram.reset()
+	mio.reset()
 	random_test(1000, cache, goldmem)
 
-	# Seq
+	# seq
 	cache.reset()
 	goldmem.reset()
+	ram.reset()
+	mio.reset()
 	seq_test(cache, goldmem)
+
+	# mmio serial
+	cache.reset()
+	goldmem.reset()
+	ram.reset()
+	mio.reset()
+	mmio_test(cache, goldmem)
 
 	dut.finalize()
 

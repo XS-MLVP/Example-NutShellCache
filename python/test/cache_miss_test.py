@@ -18,6 +18,7 @@ class MissFuncChecker():
 		self.mem_bus	= mem_bus
 		self.mmio_bus	= mmio_bus
 
+		self.has_mem_req_write	= 0
 		self.lbound		= 0
 		self.rbound		= 32 * 1024
 		
@@ -31,12 +32,18 @@ class MissFuncChecker():
 			self.msgq.pushright(addr, cmd)
 
 		if (self.io_bus.IsRespSend()):
+			self.has_mem_req_write = 0
 			addr, cmd, ts = self.msgq.popleft()
 			if (not self.io_bus.IsReqReady()):
 				cache_func.cache_miss_block()
 
 		if (self.mem_bus.IsReqSend()):
+			if (self.mem_bus.IsReqWrite() or self.mem_bus.IsReqWriteBurst()):
+				self.has_mem_req_write = 1
+
 			if (self.mem_bus.IsReqRead() or self.mem_bus.IsReqReadBurst()):
+				if (self.has_mem_req_write):
+					cache_func.cache_miss_dirty()
 				req_addr = self.mem_bus.port["req_bits_addr"].value
 				addr, cmd, _ = self.msgq.peek_left()
 				if (addr & ~(0b111) == req_addr):
@@ -60,9 +67,13 @@ def cache_miss_test(ite:int, cache:CacheWrapper, goldmen:MemorySIM):
 		cache.ReadRecv()
 		cache.ReadRecv()
 		cache.ReadRecv()
+		cache.Write(addr1, 0x114514, 0xff)
+		cache.Write(addr2, 0x114514, 0xff)
+		cache.Write(addr3, 0x114514, 0xff)
 		pass
+	for addr in range(addr_base, 2*addr_base, cacheline_size):
+		cache.Read(addr)
 	print("\n[Cache Miss Test] Finish")
-
 	pass
 
 def cache_miss_check():
@@ -91,4 +102,3 @@ def cache_miss_check():
 
 	dut.finalize()
 
-	gc.collect()

@@ -20,8 +20,6 @@ import func.mmio_func as mmio_func
 import func.cache_func as cache_func
 import pytest
 
-import gc
-
 class FuncChecker():
 	def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
 		self.xclk       = clk
@@ -48,16 +46,6 @@ class FuncChecker():
 				if (self.io_bus.IsReqWrite()):
 					mmio_func.mmio_write_req()
 
-		if (self.mmio_bus.IsReqSend()):
-			addr = self.io_bus.port["req_bits_addr"].value
-			cmd  = self.io_bus.port["req_bits_cmd"].value
-			req_addr, req_cmd, _ = self.msgq.peek_right()
-
-			if (addr == req_addr and cmd == req_cmd):
-				mmio_func.mmio_transmit()
-			else:
-				pytest.assume(0)
-
 		if (self.io_bus.IsRespSend()):
 			addr, cmd, ts = self.msgq.popleft()
 			if (not (addr >= self.MMIO_LB and addr <= self.MMIO_RB)):
@@ -70,14 +58,24 @@ class FuncChecker():
 				if (not self.io_bus.IsReqReady()):
 					mmio_func.mmio_block()
 
+		if (self.mmio_bus.IsReqSend()):
+			addr = self.mmio_bus.port["req_bits_addr"].value
+			cmd  = self.mmio_bus.port["req_bits_cmd"].value
+			req_addr, req_cmd, _ = self.msgq.peek_left()
+
+			if (addr == req_addr and cmd == req_cmd):
+				mmio_func.mmio_transmit()
+			else:
+				pytest.assume(0)
+
 def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
-	print("\n[Random Test]: Start Ramdom Test")
+	print("[Random Test]: Start Ramdom Test")
 	for i in range(ite):
 		act = random.randint(0, 1)
 
 		if (act == 0):                  # write
 			data = random.randint(0, 0x1145141919810)
-			addr = random.randint(0, 0xffffffff) & (~0xf)
+			addr = random.randint(0, 0xffffffff) & (~0b111)
 			mask = random.randint(0x1, 0xff)
 
 			cache.Write(addr, data, mask)
@@ -108,12 +106,12 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 	print("[Random Test]: End Ramdom Test\n")
 
 def seq_test(cache:CacheWrapper, goldmem:MemorySIM):
-	print("\n[Seq Test]: Start Seq Test")
+	print("[Seq Test]: Start Seq Test")
 	addr_l 	= 0
-	addr_r	= 1000
+	addr_r	= 0x10000
 	for addr in range(addr_l, addr_r, 8):
 		act = random.randint(0, 1)
-		addr &= ~(0xff)
+		addr &= ~(0b111)
 
 		if (act == 0):                  # write
 			data = random.randint(0, 0xffffffff)
@@ -144,6 +142,21 @@ def seq_test(cache:CacheWrapper, goldmem:MemorySIM):
 			assert(cres == mres)
 	print("[Seq Test]: End Seq Test\n")
 
+mmio_lb	= 0x30000000
+mmio_rb	= 0x30001000
+def mmio_test(cache: CacheWrapper, goldmem:MemorySIM):
+	print("[MMIO Test]: Start MMIO Serial Test")
+	for addr in range(mmio_lb, mmio_rb, 16):
+		addr &= ~(0xf)
+		addr1 = addr
+		addr2 = addr + 4
+		addr3 = addr + 8
+		cache.read_req_serial([addr1, addr2, addr3])
+		cache.ReadRecv()
+		cache.ReadRecv()
+		cache.ReadRecv()
+	print("[MMIO Test]: Finish MMIO Serial Test")
+		
 def rw_check():
 	dut=DUTCache("libDPICache.so")
 	dut.init_clock("clock")
@@ -159,7 +172,6 @@ def rw_check():
 
 	FuncChecker(dut.xclock, io_bus, mem_bus, mmio_bus)
 
-	# reset
 	cache.reset()
 	goldmem.reset()
 
@@ -169,5 +181,8 @@ def rw_check():
 	goldmem.reset()
 	seq_test(cache, goldmem)
 
+	cache.reset()
+	goldmem.reset()
+	mmio_test(cache, goldmem)
+
 	dut.finalize()
-	gc.collect()

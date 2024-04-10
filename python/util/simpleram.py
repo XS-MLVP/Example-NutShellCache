@@ -41,6 +41,9 @@ class SimpleRam():
 		mem_data = self.RamRead(addr)
 		data = (data & real_mask) | (mem_data & ~real_mask)
 		self.memory[addr] = data
+	
+	def reset(self):
+		self.memory.clear()
 
 	def Read(self):
 		if (self.mBus.IsReqRead()):	# normal

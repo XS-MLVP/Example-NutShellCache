@@ -11,6 +11,9 @@ def cache_miss():
 def cache_miss_block():
     pass
 
+def cache_miss_dirty():
+    pass
+
 def cache_wb_strategy():
     pass
 

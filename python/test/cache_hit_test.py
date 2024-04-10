@@ -6,9 +6,7 @@ from dut import DUTCache
 
 import xspcomm as xsp
 from util.message_queue import MessageQueue
-import func.mmio_func as mmio_func
 import func.cache_func as cache_func
-import pytest
 
 import random
 
@@ -36,7 +34,10 @@ class HitFuncChecker():
 
 			addr = self.mem_bus.port["req_bits_addr"].value
 			#assert((not (req_addr >=self.lbound and req_addr <= self.rbound)))
-			cache_func.cache_wb_strategy()
+			if (req_addr >= self.lbound and req_addr <= self.rbound):
+				assert(not (self.mem_bus.IsReqWrite() or self.mem_bus.IsReqWriteBurst()))
+			else:
+				cache_func.cache_wb_strategy()
 			
 		if (self.io_bus.IsRespSend()):
 			self.msgq.popleft()
@@ -56,7 +57,7 @@ def cache_hit_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 
 		if (act == 0):                  # write
 			data = random.randint(0, 0x1145141919810)
-			addr = random.randint(addr_l, addr_r) & (~0xf)
+			addr = random.randint(addr_l, addr_r) & (~0b111)
 			mask = random.randint(0x1, 0xff)
 
 			cache.Write(addr, data, mask)
@@ -73,7 +74,7 @@ def cache_hit_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 			assert(cres == mres)
 
 		else:                           # read
-			addr = random.randint(addr_l, addr_r) & (~0xf)
+			addr = random.randint(addr_l, addr_r) & (~0b111)
 
 			cres = cache.Read(addr)
 			mres = goldmem.MemoryRead(addr)
