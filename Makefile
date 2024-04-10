@@ -34,7 +34,7 @@ else
 	rm -rf ${TARGET}.cpp
 endif
 
-coverage:
+coverage: release
 ifeq ($(COVERAGE), ON)
 ifeq ($(SIMULATOR), verilator)
 	rm -rf coverage/
@@ -47,6 +47,8 @@ endif
 else
 	echo coverage is not on
 endif
+
+.PYHONY: coverage
 
 view_wave:
 	gtkwave ${TARGET}/${PROJECT}.${TRACE}

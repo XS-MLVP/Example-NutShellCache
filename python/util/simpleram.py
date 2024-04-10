@@ -31,7 +31,6 @@ class SimpleRam():
 			return self.memory[addr]
 		else:
 			return 0
-	
 
 	def RamWrite(self, addr, data, mask):
 		real_mask = 0
@@ -86,6 +85,7 @@ class SimpleRam():
 			self.write_index -= 1
 			self.write_offset = (self.write_offset + 8) % 64
 
+# TODO
 class SimpleRamCor():
 	def __init__(self, mBus: SimpleBusWrapper, clock:xsp.XClock):
 		self.xclk	= clock

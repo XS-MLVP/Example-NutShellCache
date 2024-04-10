@@ -8,9 +8,8 @@ import xspcomm as xsp
 from util.message_queue import MessageQueue
 import func.mmio_func as mmio_func
 import func.cache_func as cache_func
-import pytest
 
-import random
+import gc
 
 class MissFuncChecker():
 	def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
@@ -31,13 +30,18 @@ class MissFuncChecker():
 			cmd  = self.io_bus.port["req_bits_cmd"].value
 			self.msgq.pushright(addr, cmd)
 
-		if (self.mem_bus.IsReqSend()):
-			addr = self.mem_bus.port["req_bits_addr"].value
-
 		if (self.io_bus.IsRespSend()):
 			addr, cmd, ts = self.msgq.popleft()
 			if (not self.io_bus.IsReqReady()):
 				cache_func.cache_miss_block()
+
+		if (self.mem_bus.IsReqSend()):
+			if (self.mem_bus.IsReqRead() or self.mem_bus.IsReqReadBurst()):
+				req_addr = self.mem_bus.port["req_bits_addr"].value
+				addr, cmd, _ = self.msgq.peek_left()
+				if (addr & ~(0b111) == req_addr):
+					cache_func.cache_keyword_first()
+				assert(addr & ~(0b111) == req_addr)
 
 '''
 	I$ and D$ are both 32KB
@@ -86,3 +90,5 @@ def cache_miss_check():
 	cache_miss_test(10, cache, goldmem)
 
 	dut.finalize()
+
+	gc.collect()

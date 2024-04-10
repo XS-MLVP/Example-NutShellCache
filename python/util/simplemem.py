@@ -9,6 +9,9 @@ class MemorySIM:
 		self.memory = {}
 		self.LBOUND = 0x00000000
 		self.RBOUND = 0xffffffff
+
+	def reset(self):
+		self.memory.clear()
 	
 	def MemoryRead(self, addr):
 		assert (addr >= self.LBOUND and addr <= self.RBOUND), "[Memory-SIM]: Out of boundary."

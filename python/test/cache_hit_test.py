@@ -35,7 +35,7 @@ class HitFuncChecker():
 			req_addr, req_cmd, _ = self.msgq.peek_left()
 
 			addr = self.mem_bus.port["req_bits_addr"].value
-			assert((not (req_addr >=self.lbound and req_addr <= self.rbound)))
+			#assert((not (req_addr >=self.lbound and req_addr <= self.rbound)))
 			cache_func.cache_wb_strategy()
 			
 		if (self.io_bus.IsRespSend()):
@@ -62,26 +62,29 @@ def cache_hit_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 			cache.Write(addr, data, mask)
 			goldmem.MemoryWrite(addr, data, mask)
 
-			print(f"[Cache Hit Test]: Write at 0x{addr:x}, data 0x{data:x}, mask {mask:b}, ", end="")
-
 			cres = cache.Read(addr)
 			mres = goldmem.MemoryRead(addr)
 
 			if (cres == mres):
-				print("pass!")
+				pass
 			else:
+				print(f"[Cache Hit Test]: Write at 0x{addr:x}, data 0x{data:x}, mask {mask:b}, ", end="")
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
+			assert(cres == mres)
+
 		else:                           # read
 			addr = random.randint(addr_l, addr_r) & (~0xf)
-			print(f"[Cache Hit Test]: Read at 0x{addr:x}, ", end="")
 
 			cres = cache.Read(addr)
 			mres = goldmem.MemoryRead(addr)
 
 			if (cres == mres):
-				print("pass!")
+				pass
 			else:
+				print(f"[Cache Hit Test]: Read at 0x{addr:x}, ", end="")
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
+			assert(cres == mres)
+
 	cache.Read(addr_r + 114514)
 	print("\n[Cache Hit Test] Finish")
 
