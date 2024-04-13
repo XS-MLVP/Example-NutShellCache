@@ -1,4 +1,0 @@
-/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/build/CMakeFiles/UT_Cache.dir
-/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/build/CMakeFiles/UT_Cache_swig_compilation.dir
-/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/build/CMakeFiles/edit_cache.dir
-/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/build/CMakeFiles/rebuild_cache.dir

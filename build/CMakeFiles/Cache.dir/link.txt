@@ -1,1 +1,0 @@
-/usr/bin/c++ -fPIC  -fcoroutines -ftls-model=global-dynamic  -shared -Wl,-soname,libUTCache.so -o libUTCache.so CMakeFiles/Cache.dir/dut_base.cpp.o  -Wl,--whole-archive libDPICache.a -Wl,--no-whole-archive 

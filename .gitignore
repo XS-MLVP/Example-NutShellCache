@@ -1,5 +1,4 @@
 build/
-cmake/
 coverage/
 UT_*/
 covereage.*

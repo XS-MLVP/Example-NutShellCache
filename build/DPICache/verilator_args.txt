@@ -1,1 +1,0 @@
-/usr/local/bin/verilator_bin;--compiler;gcc;--prefix;VCache;--Mdir;/home/yzcc/XS-MLVP/Nutshell-cache/workload/build/DPICache;--make;cmake;--top;Cache_top;--coverage;--trace;--cc;-y;/home/yzcc/XS-MLVP/Nutshell-cache/workload;-Wno-fatal;-CFLAGS;-fPIC ;Cache_top.sv;Cache.v

@@ -1,2 +1,0 @@
-/usr/bin/ar qc libdut_base.a CMakeFiles/dut_base.dir/dut_base.cpp.o
-/usr/bin/ranlib libdut_base.a
