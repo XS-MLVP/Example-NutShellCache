@@ -24,7 +24,7 @@ release: compile
 	@make -f mk/${TLANG}.mk
 
 pytest:
-	@cd ${TARGET} && pytest --cov=func --cov-report=html --cov-config=.coveragerc
+	@cd ${TARGET} && pytest test/tb_cache.py
 
 ifneq ($(VERBOSE), OFF)
 	cp *.v *.sv ${TARGET}/
@@ -34,11 +34,13 @@ else
 	rm -rf ${TARGET}.cpp
 endif
 
-coverage: release
+LCOV_DAT	= ./${TARGET}/V${PROJECT}_coverage.dat
+
+coverage: ${LCOV_DAT}
 ifeq ($(COVERAGE), ON)
 ifeq ($(SIMULATOR), verilator)
 	rm -rf coverage/
-	verilator_coverage -write-info coverage.info ./${TARGET}/V${PROJECT}_coverage.dat
+	verilator_coverage -write-info coverage.info ${LCOV_DAT}
 	genhtml coverage.info --output-directory coverage
 else
 # TODO: add vcs?

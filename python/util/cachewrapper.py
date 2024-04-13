@@ -2,6 +2,7 @@ from util.simplebus import SimpleBusWrapper
 import pytest
 
 import xspcomm as xsp
+from asyncio import run, create_task
 
 class CacheWrapper():
     def __init__(self, bus:SimpleBusWrapper, clk:xsp.XClock, cache_port:xsp.XPort):
@@ -14,10 +15,8 @@ class CacheWrapper():
         self.p_clk.Step(100)
         self.cache_port["reset"].value = 0
         self.cache_port["io_flush"].value = 0
-        print("\n[Cache Reset]: Waiting for Initialization...")
         while (self.cache_port["io_in_req_ready"].value == 0):
             self.p_clk.Step(1)
-        print("[Cache Rrest]: Initialization Done.\n")
 
     # Trigger a read request
     def ReadReq(self, addr):
@@ -67,7 +66,6 @@ class CacheWrapper():
     def WriteRecv(self):
         while (not self.p_bus.IsRespValid()):
             self.p_clk.Step(1)
-
         return self.p_bus.IsRespWriteCmp()
 
     def Write(self, addr, data, mask):
@@ -101,3 +99,13 @@ class CacheWrapper():
         wdata   = self.cache_port[f"{prefix}req_bits_wdata"].value
 
         return addr, size, cmd ,wmask, wdata
+    
+
+class CacheWrapperCor():
+    def __init__(self):
+        pass
+
+    async def do_task(self):
+        while (1):
+            pass
+        pass

@@ -58,22 +58,27 @@ def cache_miss_test(ite:int, cache:CacheWrapper, goldmen:MemorySIM):
 	addr_base = 32 * 1024
 	cacheline_size = 64
 
-	print("\n[Cache Miss Test] Running...")
+	print("[Cache Miss Test] Running...")
 	for i in range(ite):
+		# test for cache miss block
 		addr1 = addr_base + (4 * i) * cacheline_size
 		addr2 = addr_base + (4 * i + 1) * cacheline_size
 		addr3 = addr_base + (4 * i + 2) * cacheline_size
-		cache.read_req_serial([addr1, addr2, addr3])
+		cache.p_bus.port["resp_ready"].value = 0
+		cache.read_req_serial([addr1, addr2])
+		cache.p_bus.port["resp_ready"].value = 1
 		cache.ReadRecv()
+		cache.p_clk.Step(1)
 		cache.ReadRecv()
-		cache.ReadRecv()
+		cache.p_clk.Step(1)
+		#cache.ReadRecv()
 		cache.Write(addr1, 0x114514, 0xff)
 		cache.Write(addr2, 0x114514, 0xff)
 		cache.Write(addr3, 0x114514, 0xff)
 		pass
 	for addr in range(addr_base, 2*addr_base, cacheline_size):
 		cache.Read(addr)
-	print("\n[Cache Miss Test] Finish")
+	print("[Cache Miss Test] Finish\n")
 	pass
 
 def cache_miss_check():

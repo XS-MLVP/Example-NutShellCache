@@ -8,17 +8,14 @@ import random
 from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
 from util.simpleram import SimpleRam
-from util.simplemem import MemorySIM
-from dut import DUTCache
+from util.simplemem import SimpleMem
 
-'''
-	check the functional point
-'''
 import xspcomm as xsp
 from util.message_queue import MessageQueue
 import func.mmio_func as mmio_func
 import func.cache_func as cache_func
-import pytest
+
+from util.message_queue import MessageQueue
 
 class FuncChecker():
 	def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
@@ -66,10 +63,16 @@ class FuncChecker():
 			if (addr == req_addr and cmd == req_cmd):
 				mmio_func.mmio_transmit()
 			else:
-				pytest.assume(0)
+				assert(0)
 
-def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
-	print("[Random Test]: Start Ramdom Test")
+			if (cmd == self.mmio_bus.cmd_readBurst or cmd == self.mmio_bus.cmd_writeBurst):
+				assert(0)
+				pass
+			else:
+				mmio_func.mmio_not_burst()
+
+def random_test(ite:int, cache:CacheWrapper, goldmem:SimpleMem):
+	print("\n[Random Test]: Start Ramdom Test")
 	for i in range(ite):
 		act = random.randint(0, 1)
 
@@ -79,10 +82,10 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 			mask = random.randint(0x1, 0xff)
 
 			cache.Write(addr, data, mask)
-			goldmem.MemoryWrite(addr, data, mask)
+			goldmem.memory_write(addr, data, mask)
 
 			cres = cache.Read(addr)
-			mres = goldmem.MemoryRead(addr)
+			mres = goldmem.memory_read(addr)
 			   
 			if (cres == mres):
 				pass
@@ -95,7 +98,7 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 			addr = random.randint(0, 0xffffffff) & (~0xf)
 
 			cres = cache.Read(addr)
-			mres = goldmem.MemoryRead(addr)
+			mres = goldmem.memory_read(addr)
 
 			if (cres == mres):
 				pass
@@ -103,86 +106,4 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:MemorySIM):
 				print(f"[Random Test]: Read at 0x{addr:x}, ", end="")
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
 			assert(cres == mres)
-	print("[Random Test]: End Ramdom Test\n")
-
-def seq_test(cache:CacheWrapper, goldmem:MemorySIM):
-	print("[Seq Test]: Start Seq Test")
-	addr_l 	= 0
-	addr_r	= 0x10000
-	for addr in range(addr_l, addr_r, 8):
-		act = random.randint(0, 1)
-		addr &= ~(0b111)
-
-		if (act == 0):                  # write
-			data = random.randint(0, 0xffffffff)
-			mask = random.randint(0x1, 0xff)
-
-			cache.Write(addr, data, mask)
-			goldmem.MemoryWrite(addr, data, mask)
-
-			cres = cache.Read(addr)
-			mres = goldmem.MemoryRead(addr)
-			   
-			if (cres == mres):
-				pass
-			else:
-				print(f"[Seq Test]: Write at 0x{addr:x}, data 0x{data:x}, mask {mask:b}, ", end="")
-				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
-			assert(cres == mres)
-			
-		else:
-			cres = cache.Read(addr)
-			mres = goldmem.MemoryRead(addr)
-
-			if (cres == mres):
-				pass
-			else:
-				print(f"[Seq Test]: Read at 0x{addr:x}, ", end="")
-				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
-			assert(cres == mres)
-	print("[Seq Test]: End Seq Test\n")
-
-mmio_lb	= 0x30000000
-mmio_rb	= 0x30001000
-def mmio_test(cache: CacheWrapper, goldmem:MemorySIM):
-	print("[MMIO Test]: Start MMIO Serial Test")
-	for addr in range(mmio_lb, mmio_rb, 16):
-		addr &= ~(0xf)
-		addr1 = addr
-		addr2 = addr + 4
-		addr3 = addr + 8
-		cache.read_req_serial([addr1, addr2, addr3])
-		cache.ReadRecv()
-		cache.ReadRecv()
-		cache.ReadRecv()
-	print("[MMIO Test]: Finish MMIO Serial Test")
-		
-def rw_check():
-	dut=DUTCache("libDPICache.so")
-	dut.init_clock("clock")
-
-	io_bus 		= SimpleBusWrapper(dut.port, "io_in_")
-	coh_bus 	= SimpleBusWrapper(dut.port, "io_out_coh_")
-	mem_bus		= SimpleBusWrapper(dut.port, "io_out_mem_")
-	mmio_bus	= SimpleBusWrapper(dut.port, "io_mmio_")
-	ram = SimpleRam(mem_bus, dut.xclock)
-	mio = SimpleRam(mmio_bus, dut.xclock)
-	goldmem = MemorySIM()
-	cache = CacheWrapper(io_bus, dut.xclock, dut.port)
-
-	FuncChecker(dut.xclock, io_bus, mem_bus, mmio_bus)
-
-	cache.reset()
-	goldmem.reset()
-
-	random_test(1000, cache, goldmem)
-
-	cache.reset()
-	goldmem.reset()
-	seq_test(cache, goldmem)
-
-	cache.reset()
-	goldmem.reset()
-	mmio_test(cache, goldmem)
-
-	dut.finalize()
+	print("[Random Test]: End Ramdom Test")
