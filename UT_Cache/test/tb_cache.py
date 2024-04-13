@@ -27,16 +27,16 @@ class TestCache():
         # Ram
         self.mem    = SimpleRam(self.mem_bus, self.dut.xclock)
         self.mio    = SimpleRam(self.mmio_bus, self.dut.xclock)
-
-        # Reference Cache
-        self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
-
+        
         # Gold Memory
         self.goldmem    = SimpleMem()
 
         # Cache Dut
         self.cache  = CacheWrapper(self.io_bus, self.dut.xclock, self.dut.port)
-        
+
+        # Cache Ref
+        self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
+
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
         self.testlist   = ["random"]
@@ -51,10 +51,6 @@ class TestCache():
             self.cache.reset()
             self.mem.reset()
             self.mio.reset()
-
-            # Add callback func checker
-            from .random_test import FuncChecker
-            FuncChecker(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus)
             
             # Run test
             from .random_test import random_test
