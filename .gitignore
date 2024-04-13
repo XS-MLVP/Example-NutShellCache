@@ -1,4 +1,1 @@
-build/
-coverage/
-covereage.*
-coverage.info
+__pycache__/
