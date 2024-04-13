@@ -7,8 +7,7 @@ import random
 
 from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
-from util.simpleram import SimpleRam
-from util.simplemem import SimpleMem
+from util.ref_cahce import RefCache
 
 import xspcomm as xsp
 from util.message_queue import MessageQueue
@@ -71,7 +70,7 @@ class FuncChecker():
 			else:
 				mmio_func.mmio_not_burst()
 
-def random_test(ite:int, cache:CacheWrapper, goldmem:SimpleMem):
+def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 	print("\n[Random Test]: Start Ramdom Test")
 	for i in range(ite):
 		act = random.randint(0, 1)
@@ -82,10 +81,9 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:SimpleMem):
 			mask = random.randint(0x1, 0xff)
 
 			cache.Write(addr, data, mask)
-			goldmem.memory_write(addr, data, mask)
 
 			cres = cache.Read(addr)
-			mres = goldmem.memory_read(addr)
+			mres = ref_cache.probe_data(addr)
 			   
 			if (cres == mres):
 				pass
@@ -98,7 +96,7 @@ def random_test(ite:int, cache:CacheWrapper, goldmem:SimpleMem):
 			addr = random.randint(0, 0xffffffff) & (~0xf)
 
 			cres = cache.Read(addr)
-			mres = goldmem.memory_read(addr)
+			mres = ref_cache.probe_data(addr)
 
 			if (cres == mres):
 				pass

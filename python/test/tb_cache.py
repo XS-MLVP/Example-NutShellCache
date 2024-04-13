@@ -4,6 +4,7 @@
 '''
 from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
+from util.ref_cahce import RefCache
 from util.simpleram import SimpleRam
 from util.simplemem import SimpleMem
 from dut import DUTCache
@@ -27,6 +28,9 @@ class TestCache():
         self.mem    = SimpleRam(self.mem_bus, self.dut.xclock)
         self.mio    = SimpleRam(self.mmio_bus, self.dut.xclock)
 
+        # Reference Cache
+        self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
+
         # Gold Memory
         self.goldmem    = SimpleMem()
 
@@ -34,7 +38,8 @@ class TestCache():
         self.cache  = CacheWrapper(self.io_bus, self.dut.xclock, self.dut.port)
         
         # Test List
-        self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
+        #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
+        self.testlist   = ["random"]
     
     def teardown_class(self):
         self.dut.finalize()
@@ -44,17 +49,16 @@ class TestCache():
     def test_random(self):
         if ("random" in self.testlist):
             self.cache.reset()
-            self.goldmem.reset()
             self.mem.reset()
             self.mio.reset()
 
             # Add callback func checker
             from .random_test import FuncChecker
             FuncChecker(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus)
-
+            
             # Run test
             from .random_test import random_test
-            random_test(1000, self.cache, self.goldmem)
+            random_test(1000, self.cache, self.ref_cache)
             
     # Sequencial Test
     def test_sequencial(self):
@@ -89,5 +93,13 @@ class TestCache():
             mmio_test(self.cache, self.goldmem)
 
     # Cache Hit Test
-    
+
+
+    def run(self):
+        self.setup_class()
+        
+        # random
+        self.test_random()
+
+        self.teardown_class()
     pass

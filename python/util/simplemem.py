@@ -1,8 +1,7 @@
 '''
-MemorySIM:
-	Just a simple array...
+SimpleMem:
+	Currently, it's just a simple array...
 '''
-import pytest
 
 class SimpleMem:
 	def __init__(self):

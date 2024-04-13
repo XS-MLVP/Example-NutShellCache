@@ -14,6 +14,18 @@ class SimpleBusWrapper:
         self.cmd_probeHit = 0b1100
         self.cmd_probMiss = 0b1000
         self.port = port.NewSubPort(prefix)
+    
+    def get_req_addr(self):
+        return self.port["req_bits_addr"].value
+    
+    def get_req_wdata(self):
+        return self.port["req_bits_wdata"].value
+    
+    def get_req_cmd(self):
+        return self.port["req_bits_cmd"].value
+
+    def get_req_wmask(self):
+        return self.port["req_bits_wmask"].value
 
     def IsReqReady(self):
         return self.port["req_ready"].value == 1

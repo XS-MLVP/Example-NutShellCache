@@ -6,17 +6,17 @@
 '''
 
 from collections import deque
-from util.simplebus import SimpleBusWrapper
 import xspcomm as xsp
 
-class MessageQueue():
-    def __init__(self, clock:xsp.XClock):
+class MessageQueue:
+    def __init__(self, clock:xsp.XClock, maxlen=3):
         self.xclk   = clock
 
-        self.deque  = deque(maxlen=3)
+        # Cache only has 3 stage.
+        self.deque  = deque(maxlen=maxlen)
         self.ts     = 0             # clock cycles
 
-        self.xclk.StepRis(self.StepRis)
+        self.xclk.StepRis(self.__callback)
 
     def pushleft(self, addr, cmd):
         self.deque.appendleft((addr, cmd, self.ts))
@@ -40,5 +40,5 @@ class MessageQueue():
         self.deque.append((addr, cmd, ts))
         return addr, cmd, ts
     
-    def StepRis(self, *a, **b):
+    def __callback(self, *a, **b):
         self.ts += 1

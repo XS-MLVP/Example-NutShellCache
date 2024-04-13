@@ -1,5 +1,4 @@
 from util.simplebus import SimpleBusWrapper
-import pytest
 
 import xspcomm as xsp
 from asyncio import run, create_task
