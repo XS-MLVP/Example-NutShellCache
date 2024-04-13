@@ -5,6 +5,7 @@ PYTHON 		= python3
 PYTEST 		= pytest
 VERILATOR	= verilator
 VERILATOR_C	= verilator_coverage
+GENHTML		= genhtml
 
 UT_DIR	= UT_${DUT_NAME}
 ENTRANCE = ${UT_DIR}/__init__.py
@@ -19,4 +20,4 @@ pytest:
 LCOV_DAT = ./${UT_DIR}/V${DUT_NAME}_coverage.dat
 genlcov: ${LCOV_DAT}
 	$(VERILATOR_C) -write-info coverage.info ${LCOV_DAT}
-	genhtml coverage.info --output-directory cov/line_cov
+	$(GENHTML) coverage.info --output-directory cov/line_cov

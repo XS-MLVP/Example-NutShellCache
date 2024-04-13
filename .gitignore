@@ -1,5 +1,6 @@
 __pycache__/
 *.vcd
 coverage.*
+.coverage
 *.dat
 cov/
