@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/UT_Cache_dpi.hpp
+svdpi.h
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/svdpi.h
+
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/dut.i
+dut_base.hpp
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/dut_base.hpp
+UT_Cache_dpi.hpp
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/UT_Cache_dpi.hpp
+dut_base.hpp
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/dut_base.hpp
+UT_Cache_dpi.hpp
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/UT_Cache_dpi.hpp
+
+/home/yzcc/XS-MLVP/Nutshell-cache/workload/UT_Cache/dut_base.hpp
+bits/stdc++.h
+-
+svdpi.h
+-
+
+/usr/local/share/verilator/include/vltstd/svdpi.h
+stdint.h
+-
+stdint.h
+-
+inttypes.h
+-
+sys/types.h
+-
+

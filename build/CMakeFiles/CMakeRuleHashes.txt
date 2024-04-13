@@ -1,0 +1,3 @@
+# Hashes of file build rules.
+1cafda30c80341094f5acfeaccd6bbf5 DPICache/VCache.cpp
+6b5c0a79231236a98a91a5f32e8ba628 DPICache/VCache_copy.cmake
