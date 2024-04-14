@@ -2,6 +2,9 @@
     Cache hit / miss
 '''
 
+def basic_func():
+    pass
+
 def cache_hit():
     pass
 

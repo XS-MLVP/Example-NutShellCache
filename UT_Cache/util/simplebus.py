@@ -26,6 +26,9 @@ class SimpleBusWrapper:
 
     def get_req_wmask(self):
         return self.port["req_bits_wmask"].value
+    
+    def get_resp_rdata(self):
+        return self.port["resp_bits_rdata"].value
 
     def IsReqReady(self):
         return self.port["req_ready"].value == 1

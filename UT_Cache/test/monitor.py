@@ -35,7 +35,11 @@ class Moniter:
             cmd     = self.io_bus.get_req_cmd()
             self.msgq.pushright(addr, cmd)
 
+        self.__basic()
+
         self.__mmio()
+
+        self.__cache()
 
         if (self.io_bus.IsRespSend()):
             self.msgq.popleft()
@@ -69,7 +73,28 @@ class Moniter:
             addr, cmd, _ = self.msgq.peek_left()
             if (self.__is_mmio_req(addr)):
                 mmio_block()
-
+    
+    # basic func (cache is a partial image of memory)
+    def __basic(self):
+        if (self.io_bus.IsRespSend()):
+            addr, cmd, _ = self.msgq.peek_left()
+            rdata       = self.io_bus.get_resp_rdata()
+            ref_rdata   = self.ref_cache.probe_data(addr)
+            if (cmd == self.io_bus.cmd_read):
+                if (ref_rdata != rdata):
+                    cl.print_red("result mismatches, basic func fail!")
+                    assert(0)
+                else:
+                    basic_func()
+        pass
 
     def __cache(self):
+        if (self.io_bus.IsRespSend()):
+            addr, _, ts = self.msgq.peek_left()
+            cts = self.xclk.clk
+            if (not self.__is_mmio_req(addr)):
+                if (cts - ts > 3):
+                    cache_miss()
+                else:
+                    cache_hit()
         pass

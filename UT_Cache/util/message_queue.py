@@ -14,15 +14,12 @@ class MessageQueue:
 
         # Cache only has 3 stage.
         self.deque  = deque(maxlen=maxlen)
-        self.ts     = 0             # clock cycles
-
-        self.xclk.StepRis(self.__callback)
 
     def pushleft(self, addr, cmd):
-        self.deque.appendleft((addr, cmd, self.ts))
+        self.deque.appendleft((addr, cmd, self.xclk.clk))
     
     def pushright(self, addr, cmd):
-        self.deque.append((addr, cmd, self.ts))
+        self.deque.append((addr, cmd, self.xclk.clk))
 
     def popleft(self):
         return self.deque.popleft()
@@ -42,6 +39,3 @@ class MessageQueue:
     
     def length(self):
         return len(self.deque)
-
-    def __callback(self, *a, **b):
-        self.ts += 1

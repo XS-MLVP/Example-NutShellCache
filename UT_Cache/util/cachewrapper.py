@@ -1,8 +1,9 @@
 from util.simplebus import SimpleBusWrapper
+from tools.colorprint import Color as cl
 
 import xspcomm as xsp
-from asyncio import run, create_task
 
+'''
 class CacheWrapper():
     def __init__(self, bus:SimpleBusWrapper, clk:xsp.XClock, cache_port:xsp.XPort):
         self.p_bus      = bus
@@ -73,38 +74,85 @@ class CacheWrapper():
         res = self.WriteRecv()
 
         return res
+'''
+
+import queue, threading
+
+class ReqMsg:
+    def __init__(self, addr, cmd, user=0x123, size=7,mask=0, data=0):
+        self.user   = user
+        self.size   = size
+        self.addr   = addr
+        self.cmd    = cmd
+        self.mask   = mask
+        self.data   = data
     
-    # probe cache <-> memory request
-    def probe(self, target):
-        while (not self.cache_port["io_mmio_req_valid"].value and not self.cache_port["io_out_mem_req_valid"].value):
-            self.p_clk.Step(1)
-        if (self.cache_port["io_mmio_req_valid"].value):
-            prefix = "io_mmio_"
-        else:
-            if (self.cache_port["io_out_mem_req_valid"].value):
-                prefix = "io_out_mem_"
-            else:
-                prefix = "error"
+    def __print(self):
+        print(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
+              cmd 0x{self.cmd:x}, mask {self.mask:b}, data {self.data:x}")
+
+
+class CacheWrapper:
+    def __init__(self, io_bus:SimpleBusWrapper, clk:xsp.XClock, cache_port:xsp.XPort):
+        self.xclk       = clk
+        self.io_bus     = io_bus
+        self.cache_port = cache_port
+
+        # Request Queue
+        self.req_que    = queue.Queue()
+
+        # Resp Queue
+        self.resp_que   = queue.Queue()
+
+        self.xclk.StepRis(self.__callback)
+        pass
+
+    def trigger_read_req(self, addr):
+        print(f"trigger {addr:x}")
+        self.req_que.put_nowait(ReqMsg(addr=addr, cmd=self.io_bus.cmd_read))
+
+
+    def trigger_write_req(self, addr, data, mask):
+        self.req_que.put_nowait(ReqMsg(addr=addr, cmd=self.io_bus.cmd_write, mask=mask, data=data))
+    
+    def read_recv(self):
+        while (self.resp_que.empty()):
+            self.xclk.Step(1)
+        return self.resp_que.get()
         
-        addr, size, cmd, wmask, wdata = 0, 0, 0, 0, 0
-
-        if (prefix == "error" or prefix != target):
-            return addr, size, cmd ,wmask, wdata
-
-        addr    = self.cache_port[f"{prefix}req_bits_addr"].value
-        size    = self.cache_port[f"{prefix}req_bits_size"].value
-        cmd     = self.cache_port[f"{prefix}req_bits_cmd"].value
-        wmask   = self.cache_port[f"{prefix}req_bits_wmask"].value
-        wdata   = self.cache_port[f"{prefix}req_bits_wdata"].value
-
-        return addr, size, cmd ,wmask, wdata
+    def read(self, addr):
+        self.trigger_read_req(addr)
+        return self.read_recv()
     
+    def write(self, addr, data, mask):
+        self.trigger_write_req(addr, data, mask)
 
-class CacheWrapperCor():
-    def __init__(self):
-        pass
+    def reset(self):
+        self.cache_port["reset"].value      = 1
+        self.xclk.Step(100)
+        self.cache_port["reset"].value      = 0
+        self.cache_port["io_flush"].value   = 0
+        while (not self.io_bus.IsReqReady()):
+            self.xclk.Step(1)
+        
+    def __callback(self, *a, **b):
+        print(f"{self.xclk.clk}, {self.io_bus.IsReqValid()}, {self.io_bus.IsReqReady()}")
+        assert(not self.io_bus.IsReqValid())
+        # Handle Request
+        if (self.req_que.empty()):
+            self.io_bus.ReqUnValid()
+        else:
+            self.io_bus.ReqSetValid()
+            msg:ReqMsg = self.req_que.get()
+            print(f"cb {msg.addr:x}")
+            if (msg.cmd == self.io_bus.cmd_read):
+                self.io_bus.ReqReadData(msg.addr)
+            if (msg.cmd == self.io_bus.cmd_write):
+                self.io_bus.ReqWriteData(msg.addr, msg.data, msg.mask)
 
-    async def do_task(self):
-        while (1):
-            pass
-        pass
+        # Handle Recv
+        self.io_bus.port["resp_ready"].value = 1
+        if (self.io_bus.IsRespValid()):
+            print(1)
+            res = self.io_bus.get_resp_rdata()
+            self.resp_que.put_nowait(res)

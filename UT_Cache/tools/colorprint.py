@@ -18,3 +18,6 @@ class Color:
 
     def print_red(str, end='\n'):
         print(Color.RED + str + Color.ENDC, end)
+
+    def print_yel(str, end='\n'):
+        print(Color.YELLOW + str + Color.ENDC, end)

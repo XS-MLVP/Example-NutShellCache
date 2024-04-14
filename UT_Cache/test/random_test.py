@@ -17,9 +17,9 @@ def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 			addr = random.randint(0, 0xffffffff) & (~0b111)
 			mask = random.randint(0x1, 0xff)
 
-			cache.Write(addr, data, mask)
+			cache.write(addr, data, mask)
 
-			cres = cache.Read(addr)
+			cres = cache.read(addr)
 			mres = ref_cache.probe_data(addr)
 			   
 			if (cres == mres):
@@ -32,7 +32,7 @@ def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 		else:                           # read
 			addr = random.randint(0, 0xffffffff) & (~0xf)
 
-			cres = cache.Read(addr)
+			cres = cache.read(addr)
 			mres = ref_cache.probe_data(addr)
 
 			if (cres == mres):
