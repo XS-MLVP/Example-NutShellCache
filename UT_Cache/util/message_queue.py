@@ -40,5 +40,8 @@ class MessageQueue:
         self.deque.append((addr, cmd, ts))
         return addr, cmd, ts
     
+    def length(self):
+        return len(self.deque)
+
     def __callback(self, *a, **b):
         self.ts += 1

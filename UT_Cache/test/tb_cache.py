@@ -2,6 +2,7 @@
     Top module of the testbench
     Authored by yzcc, 2024.4.13
 '''
+from .monitor import Moniter
 from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
 from util.ref_cahce import RefCache
@@ -36,6 +37,9 @@ class TestCache():
 
         # Cache Ref
         self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
+
+        # Monitor
+        Moniter(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus, self.ref_cache)
 
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
