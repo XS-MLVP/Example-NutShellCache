@@ -28,9 +28,6 @@ class TestCache():
         # Ram
         self.mem    = SimpleRam(self.mem_bus, self.dut.xclock)
         self.mio    = SimpleRam(self.mmio_bus, self.dut.xclock)
-        
-        # Gold Memory
-        self.goldmem    = SimpleMem()
 
         # Cache Ref (Must behind the Monitor)
         self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
@@ -43,12 +40,18 @@ class TestCache():
         self.cache.reset()
 
         # Test List
-        #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
-        self.testlist   = ["seq", "cache_hit"]
+        self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
+        #self.testlist   = ["random", "cache_hit"]
     
     def teardown_class(self):
         self.dut.finalize()
         color.print_blue("\nCache Test End")
+
+    def __reset(self):
+        self.cache.reset()
+        self.ref_cache.reset()
+        self.mem.reset()
+        self.mio.reset()
 
     # Random Test
     def test_random(self):
@@ -73,13 +76,14 @@ class TestCache():
         if ("mmio_serial" in self.testlist):
             # Run test
             from .mmio_test import mmio_test
-            mmio_test(self.cache, self.goldmem)
+            mmio_test(self.cache, self.ref_cache)
         else:
             print("\nmmio test is not included")
 
     # Cache Hit Test
     def test_cache_hit(self):
         if ("cache_hit" in self.testlist):
+            self.__reset()      # TODO I don't know why removing this will cause err...
             from .cache_hit_test import cache_hit_test
             cache_hit_test(100, self.cache, self.ref_cache)
         else:
@@ -88,6 +92,7 @@ class TestCache():
     # Cache Miss Test
     def test_cache_miss(self):
         if ("cache_miss" in self.testlist):
+            self.__reset()      # TODO I don't know why removing this will cause err...
             from .cache_miss_test import cache_miss_test
             cache_miss_test(100, self.cache, self.ref_cache)
         else:

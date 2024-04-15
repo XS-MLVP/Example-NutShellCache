@@ -6,6 +6,7 @@
 from .simplemem import SimpleMem
 from .simplebus import SimpleBusWrapper
 from .message_queue import MessageQueue
+from tools.my_assert import my_assert
 import xspcomm as xsp
 
 
@@ -58,8 +59,8 @@ class RefCache:
             
             # write: dirty cacheline
             if (cmd == self.io_bus.cmd_write and not self.__is_mmio(addr)):
-                assert(cacheline_base in self.cacheline)
-                assert(self.cacheline[cacheline_base][0] == "in")
+                my_assert(cacheline_base in self.cacheline, f"[ref][io bus resp] cacheline {cacheline_base:x} not in")
+                my_assert(self.cacheline[cacheline_base][0] == "in", f"[ref][io bus resp] cacheline {cacheline_base:x} attr err")
                 self.cacheline[cacheline_base][1]   = "dirty"
 
         # if cache trigger a memroy request
@@ -69,12 +70,12 @@ class RefCache:
 
             # read
             if (self.mem_bus.IsReqRead() or self.mem_bus.IsReqReadBurst()):
-                assert((not (cacheline_base in self.cacheline)) or self.cacheline[cacheline_base][0] == "out")
+                my_assert((not (cacheline_base in self.cacheline)) or self.cacheline[cacheline_base][0] == "out", f"[ref][mem bus req] read {cacheline_base:x}, already in")
                 self.cacheline[cacheline_base] = ["in", "clean"]
 
             # write
             if (self.mem_bus.IsReqWrite() or self.mem_bus.IsReqWriteLast()):
-                assert(cacheline_base in self.cacheline)
+                my_assert(cacheline_base in self.cacheline, f"[ref][mem bus req] write {cacheline_base:x}, not in")
                 self.cacheline[cacheline_base][0] = "out"
 
     # MMIO ?

@@ -56,5 +56,5 @@ def cache_hit_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
 			assert(cres == mres)
 
-	print("\n[Cache Hit Test] Finish")
+	print("[Cache Hit Test] Finish")
 

@@ -5,7 +5,7 @@
 from util.cachewrapper import CacheWrapper
 from util.ref_cache import RefCache
 				
-def mmio_test(cache: CacheWrapper, goldmem:RefCache):
+def mmio_test(cache: CacheWrapper, ref_cache:RefCache):
 	mmio_lb	= 0x30000000
 	mmio_rb	= 0x30001000
 	

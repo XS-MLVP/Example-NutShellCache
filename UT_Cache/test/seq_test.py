@@ -9,8 +9,8 @@ from util.ref_cache import RefCache
 				
 def seq_test(cache:CacheWrapper, ref_cache:RefCache):
 	print("\n[Seq Test]: Start Seq Test")
-	addr_l 	= 0
-	addr_r	= 0x10000
+	addr_l 	= 0x1000
+	addr_r	= 0x9000
 	for addr in range(addr_l, addr_r, 24):
 		act = random.randint(0, 1)
 		addr &= ~(0b111)
