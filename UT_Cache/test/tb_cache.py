@@ -32,7 +32,7 @@ class TestCache():
         # Gold Memory
         self.goldmem    = SimpleMem()
 
-        # Cache Ref
+        # Cache Ref (Must behind the Monitor)
         self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
 
         # Monitor
@@ -40,10 +40,11 @@ class TestCache():
 
         # Cache Dut (Must be the last)
         self.cache  = CacheWrapper(self.io_bus, self.dut.xclock, self.dut.port)
+        self.cache.reset()
 
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
-        self.testlist   = ["random"]
+        self.testlist   = ["seq", "random"]
     
     def teardown_class(self):
         self.dut.finalize()
@@ -52,10 +53,6 @@ class TestCache():
     # Random Test
     def test_random(self):
         if ("random" in self.testlist):
-            self.cache.reset()
-            self.mem.reset()
-            self.mio.reset()
-            
             # Run test
             from .random_test import random_test
             random_test(1000, self.cache, self.ref_cache)
@@ -63,18 +60,9 @@ class TestCache():
     # Sequencial Test
     def test_sequencial(self):
         if ("seq" in self.testlist):
-            self.cache.reset()
-            self.goldmem.reset()
-            self.mem.reset()
-            self.mio.reset()
-
-            # Add callback func checker
-            from .seq_test import FuncChecker
-            FuncChecker(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus)
-
             # Run test
             from .seq_test import seq_test
-            seq_test(self.cache, self.goldmem)
+            seq_test(self.cache, self.ref_cache)
 
     # MMIO Test
     def test_mmio(self):

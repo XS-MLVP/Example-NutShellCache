@@ -52,7 +52,6 @@ class RefCache:
 
         # if a cache r/w req has been responsed
         if (self.io_bus.IsRespSend() and not self.msgq.empty()):
-            #print(f"{self.io_bus.get_resp_rdata():x}, {self.io_bus.get_resp_cmd():x}")
             # msg queue
             addr, cmd, _    = self.msgq.popleft()
             cacheline_base  = addr & (~0b111111)        # aligned to CACHELINSE_SZ
@@ -78,7 +77,6 @@ class RefCache:
                 assert(cacheline_base in self.cacheline)
                 self.cacheline[cacheline_base][0] = "out"
 
-
     # MMIO ?
     def __is_mmio(self, addr):
         return self.MMIOLB <= addr and addr <= self.MMIORB
@@ -101,4 +99,4 @@ class RefCache:
         if (cacheline_base in self.cacheline):
             return self.cacheline[cacheline_base]
         else:
-            return ("out", "clean")
+            return ["out", "clean"]

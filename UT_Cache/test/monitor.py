@@ -43,7 +43,6 @@ class Moniter:
 
         if (self.io_bus.IsRespSend()):
             self.msgq.popleft()
-        pass
 
     def __is_mmio_req(self, addr):
         return 0x30000000 <= addr and addr <= 0x7fffffff
@@ -87,7 +86,7 @@ class Moniter:
                 else:
                     basic_func()
         pass
-
+    
     def __cache(self):
         if (self.io_bus.IsRespSend()):
             addr, _, ts = self.msgq.peek_left()
@@ -97,4 +96,24 @@ class Moniter:
                     cache_miss()
                 else:
                     cache_hit()
-        pass
+        
+        if (not self.io_bus.IsReqReady() and not self.msgq.empty()):
+            addr, cmd, _ = self.msgq.peek_left()
+            if (not self.__is_mmio_req(addr)):
+                cache_miss_block()
+
+        if (self.mem_bus.IsReqSend()):
+            req_addr = self.mem_bus.get_req_addr()
+            addr, cmd, _ = self.msgq.peek_left()
+            if (addr & ~(0b111) == req_addr):
+                cache_keyword_first()
+
+        if (self.mem_bus.IsReqWrite() or self.mem_bus.IsReqWriteLast()):
+            req_addr = self.mem_bus.get_req_addr()
+            status = self.ref_cache.probe_cacheline_status(req_addr)
+            if (status[1] == "dirty"):
+                cache_wb_strategy()
+            else:
+                cl.print_red("cache write-back stragtegy test fail!")
+                assert(0)
+        

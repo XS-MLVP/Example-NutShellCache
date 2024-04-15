@@ -11,9 +11,11 @@ def cache_hit():
 def cache_miss():
     pass
 
+# cache_miss will block the cache
 def cache_miss_block():
     pass
 
+# when miss, firstly write back, then read in
 def cache_miss_dirty():
     pass
 
