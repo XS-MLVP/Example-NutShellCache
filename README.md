@@ -29,7 +29,7 @@ UT_Cache
 │   ├── monitor.py          // 功能点检测
 │   ├── random_test.py
 │   ├── seq_test.py
-│   └── tb_cache.py         // 测试用例入口
+│   └── tb_cache.py         // 测试用例入口（pytest入口）
 ├── tools
 │   └── colorprint.py
 ├── _UT_Cache.so
@@ -55,6 +55,10 @@ UT_Cache
 `make genlcov`: 生成代码覆盖率，执行后将在目录`cov/func`中生成报告  
 `make view_wave`: 使用GTK Wave查看波形  
 
+## TBD
+1. 部分命名的修正  
+2. 目前只修改了随机测试(`random_test.py`)，后续将继续修改其他测试用例
+
 ## 更新日志
 [2024.4.7]：  
 1. 围绕功能点测试调整python测试目录结构。目前思路是在`func_checker.py`中触发功能点检测，然后到func目录下执行相关函数触发覆盖率检测。  
@@ -63,4 +67,6 @@ UT_Cache
 
 [2024.4.13]:
 1. 更新了(大改了)一下框架
-2. 明天再写
+2. 修改了一下`Cachewrapper`的结构，在原有的基础上增加两个队列`req_que`和`resp_que`。发送请求时，会将请求暂存在`req_que`中，时钟上升沿到来时会自动检查`req_que`中的情况并发送到总线上。同时，上升沿到来时也会检查是否存在来自cache的回复，若存在则将回复内容放在`resp_que`中。目标是实现将请求的收发解耦。  
+3. 在原有的`SimpleMemory`基础上改造参考模型`Ref_Cache`，除了原有的内存功能，还支持cacheline情况查询（是否在cache中，是否为脏块）
+4. 修改功能点检测逻辑，在Monitor中(`test/monitor.py`)统一检查。  
