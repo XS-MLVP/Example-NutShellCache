@@ -51,8 +51,8 @@ UT_Cache
 
 ## Command
 `make run`: 运行命令`python3 UT_Cache/__init__.py`  
-`make pytest`: 执行pytest测试，执行后将在目录`cov/func`中生成功能覆盖率报告  
-`make genlcov`: 生成代码覆盖率，执行后将在目录`cov/func`中生成报告  
+`make pytest`: 执行pytest测试，执行后将在目录`cov/func_cov`中生成功能覆盖率报告  
+`make genlcov`: 生成代码覆盖率，执行后将在目录`cov/line_cov`中生成报告  
 `make view_wave`: 使用GTK Wave查看波形  
 
 ## TBD
