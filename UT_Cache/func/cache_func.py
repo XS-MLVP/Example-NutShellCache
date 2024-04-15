@@ -15,8 +15,12 @@ def cache_miss():
 def cache_miss_block():
     pass
 
-# when miss, firstly write back, then read in
+# dirty: firstly write back, then read in
 def cache_miss_dirty():
+    pass
+
+# clean: only read in
+def cache_miss_clean():
     pass
 
 def cache_wb_strategy():

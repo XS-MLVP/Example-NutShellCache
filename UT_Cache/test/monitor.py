@@ -27,6 +27,8 @@ class Moniter:
         # MSGQ
         self.msgq       = MessageQueue(self.xclk)
 
+        self.is_miss_dirty  = 0
+
         self.xclk.StepRis(self.__callback)
 
     def __callback(self, *a, **b):
@@ -85,7 +87,6 @@ class Moniter:
                     assert(0)
                 else:
                     basic_func()
-        pass
     
     def __cache(self):
         if (self.io_bus.IsRespSend()):
@@ -102,18 +103,32 @@ class Moniter:
             if (not self.__is_mmio_req(addr)):
                 cache_miss_block()
 
-        if (self.mem_bus.IsReqSend()):
+        if (self.mem_bus.IsReqRead() or self.mem_bus.IsReqReadBurst()):
             req_addr = self.mem_bus.get_req_addr()
             addr, cmd, _ = self.msgq.peek_left()
             if (addr & ~(0b111) == req_addr):
                 cache_keyword_first()
+            
+            if (self.is_miss_dirty):
+                cache_miss_dirty()
+            else:
+                cache_miss_clean()
+            self.is_miss_dirty = 0
 
         if (self.mem_bus.IsReqWrite() or self.mem_bus.IsReqWriteLast()):
             req_addr = self.mem_bus.get_req_addr()
             status = self.ref_cache.probe_cacheline_status(req_addr)
             if (status[1] == "dirty"):
+                self.is_miss_dirty = 1
+            else:
+                cl.print_red("cache shouldn't write back clean block!")
+                assert(0)
+
+            addr, cmd, _ = self.msgq.peek_left()
+            status = self.ref_cache.probe_cacheline_status(addr)
+            if (status[0] == "out"):
                 cache_wb_strategy()
             else:
-                cl.print_red("cache write-back stragtegy test fail!")
+                cl.print_red("cache write-back strategy test fail!")
                 assert(0)
         
