@@ -27,4 +27,5 @@ view_wave: ${UT_DIR}/$(DUT_NAME).vcd
 	$(GTK_WAVE) ${UT_DIR}/$(DUT_NAME).vcd
 
 clean:
-	-@rm -rf *.vcd *.dat cov *.info
+	-@rm *.vcd *.dat cov *.info
+	-@cd UT_Cache && rm *.vcd *.dat *.info .coverage
