@@ -57,7 +57,7 @@ UT_Cache
 
 ## TBD
 1. 部分命名的修正  
-2. 目前只修改了随机测试(`random_test.py`)，后续将继续修改其他测试用例
+2. 连续运行`seq_test`/`random_test` + `cache_hit_test`/`cache_miss_test`时出错...（怀疑是ref_cache中的dictioinary溢出？）
 
 ## 更新日志
 [2024.4.7]：  
