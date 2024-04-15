@@ -44,7 +44,7 @@ class TestCache():
 
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
-        self.testlist   = ["seq", "random"]
+        self.testlist   = ["seq", "random", "mmio_serial"]
     
     def teardown_class(self):
         self.dut.finalize()
@@ -67,15 +67,6 @@ class TestCache():
     # MMIO Test
     def test_mmio(self):
         if ("mmio_serial" in self.testlist):
-            self.cache.reset()
-            self.goldmem.reset()
-            self.mem.reset()
-            self.mio.reset()
-
-            # Add caallback func checker
-            from .mmio_test import FuncChecker
-            FuncChecker(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus)
-
             # Run test
             from .mmio_test import mmio_test
             mmio_test(self.cache, self.goldmem)

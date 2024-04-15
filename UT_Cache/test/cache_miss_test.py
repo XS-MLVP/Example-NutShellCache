@@ -9,8 +9,6 @@ from util.message_queue import MessageQueue
 import func.mmio_func as mmio_func
 import func.cache_func as cache_func
 
-import gc
-
 class MissFuncChecker():
 	def __init__(self, clk:xsp.XClock, io_bus:SimpleBusWrapper, mem_bus:SimpleBusWrapper, mmio_bus:SimpleBusWrapper):
 		self.xclk		= clk
