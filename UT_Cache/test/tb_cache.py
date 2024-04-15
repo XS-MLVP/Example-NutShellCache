@@ -44,7 +44,7 @@ class TestCache():
 
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
-        self.testlist   = ["seq", "random", "mmio_serial"]
+        self.testlist   = ["seq", "cache_hit"]
     
     def teardown_class(self):
         self.dut.finalize()
@@ -56,6 +56,8 @@ class TestCache():
             # Run test
             from .random_test import random_test
             random_test(1000, self.cache, self.ref_cache)
+        else:
+            print("\nrandom test is not included")
             
     # Sequencial Test
     def test_sequencial(self):
@@ -63,6 +65,8 @@ class TestCache():
             # Run test
             from .seq_test import seq_test
             seq_test(self.cache, self.ref_cache)
+        else:
+            print("\nsequencial test is not included")
 
     # MMIO Test
     def test_mmio(self):
@@ -70,9 +74,24 @@ class TestCache():
             # Run test
             from .mmio_test import mmio_test
             mmio_test(self.cache, self.goldmem)
+        else:
+            print("\nmmio test is not included")
 
     # Cache Hit Test
+    def test_cache_hit(self):
+        if ("cache_hit" in self.testlist):
+            from .cache_hit_test import cache_hit_test
+            cache_hit_test(100, self.cache, self.ref_cache)
+        else:
+            print("\ncache hit test is not included")
 
+    # Cache Miss Test
+    def test_cache_miss(self):
+        if ("cache_miss" in self.testlist):
+            from .cache_miss_test import cache_miss_test
+            cache_miss_test(100, self.cache, self.ref_cache)
+        else:
+            print("\ncache miss test is not included")
 
     def run(self):
         self.setup_class()
