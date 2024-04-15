@@ -11,7 +11,7 @@ picker(<https://github.com/XS-MLVP/picker>), pytest, python, verilator, gtk wave
 ## Workdir Structure
 ```
 UT_Cache
-├── cache_dut.              // 由picker导出的dut顶层封装
+├── cache_dut.py            // 使用picker导出的dut顶层封装
 ├── func                    // 生成功能覆盖率用
 │   ├── cache_func.py
 │   ├── __init__.py
@@ -37,7 +37,7 @@ UT_Cache
 │   ├── cachewrapper.py
 │   ├── __init__.py
 │   ├── message_queue.py
-│   ├── ref_cahce.py
+│   ├── ref_cache.py
 │   ├── simplebus.py
 │   ├── simplemem.py
 │   └── simpleram.py

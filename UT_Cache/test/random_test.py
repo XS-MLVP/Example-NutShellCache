@@ -5,7 +5,7 @@
 
 import random
 from util.cachewrapper import CacheWrapper
-from util.ref_cahce import RefCache
+from util.ref_cache import RefCache
 
 def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 	print("\n[Random Test]: Start Ramdom Test")

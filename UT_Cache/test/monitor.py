@@ -3,7 +3,7 @@
     Authored by yzcc, 2024.4.13
 '''
 
-from util.ref_cahce import RefCache
+from util.ref_cache import RefCache
 from util.simplebus import SimpleBusWrapper
 from util.message_queue import MessageQueue
 from tools.colorprint import Color as cl
