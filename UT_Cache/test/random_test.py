@@ -18,15 +18,16 @@ def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 			mask = random.randint(0x1, 0xff)
 
 			cache.write(addr, data, mask)
-
 			cres = cache.read(addr)
+			
 			mres = ref_cache.probe_data(addr)
-			   
+
 			if (cres == mres):
 				pass
 			else:
 				print(f"[Random Test]: Write at 0x{addr:x}, data 0x{data:x}, mask {mask:b}, ", end="")
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
+				break
 			assert(cres == mres)
 
 		else:                           # read
@@ -40,5 +41,6 @@ def random_test(ite:int, cache:CacheWrapper, ref_cache:RefCache):
 			else:
 				print(f"[Random Test]: Read at 0x{addr:x}, ", end="")
 				print(f"fail! (cache: 0x{cres:x}, mem: 0x{mres:x})")
+				break
 			assert(cres == mres)
 	print("[Random Test]: End Ramdom Test")

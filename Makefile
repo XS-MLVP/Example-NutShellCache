@@ -12,7 +12,7 @@ UT_DIR	= UT_${DUT_NAME}
 ENTRANCE = ${UT_DIR}/__init__.py
 
 run:
-	@$(PYTHON) $(ENTRANCE)
+	@cd ${UT_DIR} && $(PYTHON) __init__.py
 
 # This will generate functional coverage
 pytest:

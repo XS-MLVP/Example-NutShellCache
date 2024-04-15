@@ -32,14 +32,14 @@ class TestCache():
         # Gold Memory
         self.goldmem    = SimpleMem()
 
-        # Cache Dut
-        self.cache  = CacheWrapper(self.io_bus, self.dut.xclock, self.dut.port)
-
         # Cache Ref
         self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
 
         # Monitor
         Moniter(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus, self.ref_cache)
+
+        # Cache Dut (Must be the last)
+        self.cache  = CacheWrapper(self.io_bus, self.dut.xclock, self.dut.port)
 
         # Test List
         #self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
@@ -100,6 +100,9 @@ class TestCache():
         
         # random
         self.test_random()
+        #self.cache.reset()
+        #self.cache.trigger_read_req(114514)
+        #self.cache.xclk.Step(1000)
 
         self.teardown_class()
     pass

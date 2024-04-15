@@ -37,5 +37,8 @@ class MessageQueue:
         self.deque.append((addr, cmd, ts))
         return addr, cmd, ts
     
+    def empty(self):
+        return self.length() == 0
+
     def length(self):
         return len(self.deque)

@@ -87,7 +87,7 @@ class ReqMsg:
         self.mask   = mask
         self.data   = data
     
-    def __print(self):
+    def display(self):
         print(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
               cmd 0x{self.cmd:x}, mask {self.mask:b}, data {self.data:x}")
 
@@ -108,24 +108,24 @@ class CacheWrapper:
         pass
 
     def trigger_read_req(self, addr):
-        print(f"trigger {addr:x}")
         self.req_que.put_nowait(ReqMsg(addr=addr, cmd=self.io_bus.cmd_read))
 
 
     def trigger_write_req(self, addr, data, mask):
         self.req_que.put_nowait(ReqMsg(addr=addr, cmd=self.io_bus.cmd_write, mask=mask, data=data))
     
-    def read_recv(self):
+    def recv(self):
         while (self.resp_que.empty()):
             self.xclk.Step(1)
         return self.resp_que.get()
         
     def read(self, addr):
         self.trigger_read_req(addr)
-        return self.read_recv()
+        return self.recv()
     
     def write(self, addr, data, mask):
         self.trigger_write_req(addr, data, mask)
+        return self.recv()
 
     def reset(self):
         self.cache_port["reset"].value      = 1
@@ -136,15 +136,15 @@ class CacheWrapper:
             self.xclk.Step(1)
         
     def __callback(self, *a, **b):
-        print(f"{self.xclk.clk}, {self.io_bus.IsReqValid()}, {self.io_bus.IsReqReady()}")
-        assert(not self.io_bus.IsReqValid())
         # Handle Request
+        if (self.io_bus.IsReqSend()):
+            self.req_que.get()
+
         if (self.req_que.empty()):
             self.io_bus.ReqUnValid()
         else:
             self.io_bus.ReqSetValid()
-            msg:ReqMsg = self.req_que.get()
-            print(f"cb {msg.addr:x}")
+            msg:ReqMsg = self.req_que.queue[0]
             if (msg.cmd == self.io_bus.cmd_read):
                 self.io_bus.ReqReadData(msg.addr)
             if (msg.cmd == self.io_bus.cmd_write):
@@ -153,6 +153,5 @@ class CacheWrapper:
         # Handle Recv
         self.io_bus.port["resp_ready"].value = 1
         if (self.io_bus.IsRespValid()):
-            print(1)
             res = self.io_bus.get_resp_rdata()
             self.resp_que.put_nowait(res)
