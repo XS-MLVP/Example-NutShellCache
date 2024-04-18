@@ -6,7 +6,7 @@
 picker(<https://github.com/XS-MLVP/picker>), pytest, python, verilator, gtk wave, lcov
 
 ## Framework
-![](img/2024-04-15-10-51-00.png)
+![](img/2024-04-18-13-23-21.png)
 
 ## Workdir Structure
 ```
