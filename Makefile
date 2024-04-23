@@ -16,7 +16,7 @@ run:
 
 # This will generate functional coverage
 pytest:
-	@cd ${UT_DIR} && $(PYTEST) runner/tb_cache.py
+	@cd ${UT_DIR} && $(PYTEST) runner/tb_cache.py -s
 
 LCOV_DAT = ./${UT_DIR}/V${DUT_NAME}_coverage.dat
 genlcov: ${LCOV_DAT}
