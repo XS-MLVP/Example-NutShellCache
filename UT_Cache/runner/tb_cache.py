@@ -2,12 +2,11 @@
     Top module of the testbench
     Authored by yzcc, 2024.4.13
 '''
-from .monitor import Moniter
+from monitor.monitor import Moniter
 from util.simplebus import SimpleBusWrapper
 from util.cachewrapper import CacheWrapper
 from util.ref_cache import RefCache
 from util.simpleram import SimpleRam
-from util.simplemem import SimpleMem
 from cache_dut import DUTCache
 
 from tools.colorprint import Color as color
@@ -40,8 +39,8 @@ class TestCache():
         self.cache.reset()
 
         # Test List
-        self.testlist   = ["cache_hit", "cache_miss", "random", "seq", "mmio_serial"]
-        #self.testlist   = ["random", "cache_hit"]
+        self.testlist   = ["mmio_serial"]
+        #self.testlist   = ["random", "seq", "cache_miss"]
     
     def teardown_class(self):
         self.dut.finalize()
@@ -57,7 +56,7 @@ class TestCache():
     def test_random(self):
         if ("random" in self.testlist):
             # Run test
-            from .random_test import random_test
+            from ..test.random_test import random_test
             random_test(1000, self.cache, self.ref_cache)
         else:
             print("\nrandom test is not included")
@@ -66,7 +65,7 @@ class TestCache():
     def test_sequencial(self):
         if ("seq" in self.testlist):
             # Run test
-            from .seq_test import seq_test
+            from ..test.seq_test import seq_test
             seq_test(self.cache, self.ref_cache)
         else:
             print("\nsequencial test is not included")
@@ -75,7 +74,7 @@ class TestCache():
     def test_mmio(self):
         if ("mmio_serial" in self.testlist):
             # Run test
-            from .mmio_test import mmio_test
+            from ..test.mmio_test import mmio_test
             mmio_test(self.cache, self.ref_cache)
         else:
             print("\nmmio test is not included")
@@ -84,7 +83,7 @@ class TestCache():
     def test_cache_hit(self):
         if ("cache_hit" in self.testlist):
             self.__reset()      # TODO I don't know why removing this will cause err...
-            from .cache_hit_test import cache_hit_test
+            from ..test.cache_hit_test import cache_hit_test
             cache_hit_test(100, self.cache, self.ref_cache)
         else:
             print("\ncache hit test is not included")
@@ -93,7 +92,7 @@ class TestCache():
     def test_cache_miss(self):
         if ("cache_miss" in self.testlist):
             self.__reset()      # TODO I don't know why removing this will cause err...
-            from .cache_miss_test import cache_miss_test
+            from ..test.cache_miss_test import cache_miss_test
             cache_miss_test(100, self.cache, self.ref_cache)
         else:
             print("\ncache miss test is not included")

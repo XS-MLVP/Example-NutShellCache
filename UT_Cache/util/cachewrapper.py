@@ -3,7 +3,7 @@ from tools.colorprint import Color as cl
 
 import xspcomm as xsp
 
-import queue, threading
+import queue
 
 class ReqMsg:
     def __init__(self, addr, cmd, user=0x123, size=7,mask=0, data=0):
@@ -17,7 +17,6 @@ class ReqMsg:
     def display(self):
         print(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
               cmd 0x{self.cmd:x}, mask {self.mask:b}, data {self.data:x}")
-
 
 class CacheWrapper:
     def __init__(self, io_bus:SimpleBusWrapper, clk:xsp.XClock, cache_port:xsp.XPort):
