@@ -11,29 +11,35 @@ picker(<https://github.com/XS-MLVP/picker>), pytest, python, verilator, gtk wave
 ## Workdir Structure
 ```
 UT_Cache
-├── cache_dut.py            // 使用picker导出的dut顶层封装
-├── func                    // 生成功能覆盖率用
+├── cache_dut.py                // 使用picker导出的dut顶层封装
+├── .coveragerc
+├── func                        // 生成功能覆盖率用
 │   ├── cache_func.py
 │   ├── __init__.py
 │   └── mmio_func.py
 ├── __init__.py
 ├── libDPICache.a
-├── libUT_Cache.py          // picker导出的封装
+├── libUT_Cache.py
 ├── libUTCache.so
-├── pytest.ini              // pytest配置
-├── test                    // 测试用例
-│   ├── cache_hit_test.py
-│   ├── cache_miss_test.py
+├── monitor                     // 功能点（覆盖）检测
 │   ├── __init__.py
-│   ├── mmio_test.py
-│   ├── monitor.py          // 功能点检测
-│   ├── random_test.py
-│   ├── seq_test.py
-│   └── tb_cache.py         // 测试用例入口（pytest入口）
+│   └── monitor.py
+├── pytest.ini
+├── runner                      // pytest测试入口
+│   ├── __init__.py
+│   └── tb_cache.py
+├── test                        // 测试用例
+│   ├── __init__.py
+│   ├── test_cache_hit.py
+│   ├── test_cache_miss.py
+│   ├── test_mmio.py
+│   ├── test_random.py
+│   └── test_seq.py
 ├── tools
-│   └── colorprint.py
+│   ├── colorprint.py
+│   └── my_assert.py
 ├── _UT_Cache.so
-├── util                    // 外围设备模拟
+├── util                        // 外围设备模拟
 │   ├── cachewrapper.py
 │   ├── __init__.py
 │   ├── message_queue.py
@@ -41,7 +47,7 @@ UT_Cache
 │   ├── simplebus.py
 │   ├── simplemem.py
 │   └── simpleram.py
-└── xspcomm                 // xscomm库的python版本(picker生成)
+└── xspcomm                     // xcomm的python版本（picker生成）
     ├── info.py
     ├── __init__.py
     ├── pyxspcomm.py

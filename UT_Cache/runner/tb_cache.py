@@ -56,7 +56,7 @@ class TestCache():
     def test_random(self):
         if ("random" in self.testlist):
             # Run test
-            from ..test.random_test import random_test
+            from ..test.test_random import random_test
             random_test(1000, self.cache, self.ref_cache)
         else:
             print("\nrandom test is not included")
@@ -65,7 +65,7 @@ class TestCache():
     def test_sequencial(self):
         if ("seq" in self.testlist):
             # Run test
-            from ..test.seq_test import seq_test
+            from ..test.test_seq import seq_test
             seq_test(self.cache, self.ref_cache)
         else:
             print("\nsequencial test is not included")
@@ -74,7 +74,7 @@ class TestCache():
     def test_mmio(self):
         if ("mmio_serial" in self.testlist):
             # Run test
-            from ..test.mmio_test import mmio_test
+            from ..test.test_mmio import mmio_test
             mmio_test(self.cache, self.ref_cache)
         else:
             print("\nmmio test is not included")
@@ -83,7 +83,7 @@ class TestCache():
     def test_cache_hit(self):
         if ("cache_hit" in self.testlist):
             self.__reset()      # TODO I don't know why removing this will cause err...
-            from ..test.cache_hit_test import cache_hit_test
+            from ..test.test_cache_hit import cache_hit_test
             cache_hit_test(100, self.cache, self.ref_cache)
         else:
             print("\ncache hit test is not included")
@@ -92,7 +92,7 @@ class TestCache():
     def test_cache_miss(self):
         if ("cache_miss" in self.testlist):
             self.__reset()      # TODO I don't know why removing this will cause err...
-            from ..test.cache_miss_test import cache_miss_test
+            from ..test.test_cache_miss import cache_miss_test
             cache_miss_test(100, self.cache, self.ref_cache)
         else:
             print("\ncache miss test is not included")
