@@ -28,10 +28,10 @@ class TestCache():
         self.mem    = SimpleRam(self.mem_bus, self.dut.xclock)
         self.mio    = SimpleRam(self.mmio_bus, self.dut.xclock)
 
-        # Cache Ref (Must behind the Monitor)
+        # Cache Ref 
         self.ref_cache = RefCache(self.io_bus, self.mem_bus, self.dut.xclock)
 
-        # Monitor
+        # Monitor (Must behind Cache_Ref)
         Moniter(self.dut.xclock, self.io_bus, self.mem_bus, self.mmio_bus, self.ref_cache)
 
         # Cache Dut (Must be the last)

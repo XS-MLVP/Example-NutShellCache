@@ -55,6 +55,14 @@ UT_Cache
     └── _pyxspcomm.so.0.0.1
 ```
 
+## Explanation
+### 1 Monitor
+`monitor.py`用于监听总线上的信号信息，并根据这些信息判断功能点是否被覆盖。例如，通过监听顶层的地址以及控制信息，可以判断是否发生MMIO请求。  
+具体实现时采用回调的方式。在事件时钟上升沿发生时，调用监听函数获得总线上的信息，并判断功能点是否被覆盖。
+
+### 2 Runner
+`tb_cache.py`是pytest测试用的程序，其中包含测试类`TestCache`。pytest运行时，首先会执行`setup_class()`函数进行初始化，然后将类中所有以`test_`开头的函数加入测试集运行。当测试集中的函数均运行完毕后，执行`tear_down()`回收环境。
+
 ## Command
 `make run`: 运行命令`python3 UT_Cache/__init__.py`  
 `make pytest`: 执行pytest测试，执行后将在目录`cov/func_cov`中生成功能覆盖率报告  
