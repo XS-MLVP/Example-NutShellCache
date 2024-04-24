@@ -76,3 +76,7 @@ UT_Cache
 2. 修改了一下`Cachewrapper`的结构，在原有的基础上增加两个队列`req_que`和`resp_que`。发送请求时，会将请求暂存在`req_que`中，时钟上升沿到来时会自动检查`req_que`中的情况并发送到总线上。同时，上升沿到来时也会检查是否存在来自cache的回复，若存在则将回复内容放在`resp_que`中。目标是实现将请求的收发解耦。  
 3. 在原有的`SimpleMemory`基础上改造参考模型`Ref_Cache`，除了原有的内存功能，还支持cacheline情况查询（是否在cache中，是否为脏块）
 4. 修改功能点检测逻辑，在Monitor中(`test/monitor.py`)统一检查。  
+
+[2024.4.23]:
+1. 修改部分命名
+2. 支持部分callback报错
