@@ -1,6 +1,21 @@
 
 from .pyxspcomm import *
 import sys
+import inspect
+
+# handle exception when callback
+def cb_exception_handler(func, exception):
+	print(f"\033[31mCallback Error in \033[0m{func.__qualname__}, ", end="")
+	if (exception != ""):
+		print(f"\033[31mInfo: \033[0m{exception}")
+	else:
+		print("")
+	print("[Trace Back]")
+	for frame_info in inspect.stack():
+		print(f"  File '{frame_info.filename}', line {frame_info.lineno}, in {frame_info.function}")
+		if frame_info.code_context:
+			print("    ", frame_info.code_context[0].strip())
+
 
 # PinBind
 PinBind__old__setattr__ = PinBind.__setattr__
@@ -86,6 +101,7 @@ class xclock_cb_step(cb_int_bool):
 		try:
 			return self.func(dump)
 		except Exception as e:
+			cb_exception_handler(self.func, e)
 			assert(0)
 
 class xclock_cb_step_rf(cb_void_u64_voidp):
@@ -99,13 +115,8 @@ class xclock_cb_step_rf(cb_void_u64_voidp):
 		try:
 			return self.func(cycle, *self.args, **self.kwargs)
 		except Exception as e:
-			import inspect
-			for frame_info in inspect.stack():
-				print(f"  File '{frame_info.filename}', line {frame_info.lineno}, in {frame_info.function}")
-				if frame_info.code_context:
-					print("    ", frame_info.code_context[0].strip())
-			print('\n')
-			#assert(0)
+			cb_exception_handler(self.func, e)
+			assert(0)
 
 import asyncio
 XClock_old_init__ = XClock.__init__
