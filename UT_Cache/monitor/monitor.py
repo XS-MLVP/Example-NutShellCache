@@ -32,7 +32,6 @@ class Moniter:
         self.xclk.StepRis(self.__callback)
 
     def __callback(self, *a, **b):
-        assert 0, "fuck"
         if (self.io_bus.IsReqSend()):
             addr    = self.io_bus.get_req_addr()
             cmd     = self.io_bus.get_req_cmd()
