@@ -137,6 +137,12 @@ class DutBase(object):
     def finalize(self):
         return _UT_Cache.DutBase_finalize(self)
 
+    def set_waveform(self, filename):
+        return _UT_Cache.DutBase_set_waveform(self, filename)
+
+    def set_coverage(self, filename):
+        return _UT_Cache.DutBase_set_coverage(self, filename)
+
 # Register DutBase in _UT_Cache:
 _UT_Cache.DutBase_swigregister(DutBase)
 class DutVerilatorBase(DutBase):
@@ -160,6 +166,12 @@ class DutVerilatorBase(DutBase):
     def finalize(self):
         return _UT_Cache.DutVerilatorBase_finalize(self)
 
+    def set_waveform(self, filename):
+        return _UT_Cache.DutVerilatorBase_set_waveform(self, filename)
+
+    def set_coverage(self, filename):
+        return _UT_Cache.DutVerilatorBase_set_coverage(self, filename)
+
 # Register DutVerilatorBase in _UT_Cache:
 _UT_Cache.DutVerilatorBase_swigregister(DutVerilatorBase)
 class DutUnifiedBase(DutVerilatorBase):
@@ -176,6 +188,12 @@ class DutUnifiedBase(DutVerilatorBase):
 
     def finalize(self):
         return _UT_Cache.DutUnifiedBase_finalize(self)
+
+    def set_waveform(self, filename):
+        return _UT_Cache.DutUnifiedBase_set_waveform(self, filename)
+
+    def set_coverage(self, filename):
+        return _UT_Cache.DutUnifiedBase_set_coverage(self, filename)
     def __disown__(self):
         self.this.disown()
         _UT_Cache.disown_DutUnifiedBase(self)
