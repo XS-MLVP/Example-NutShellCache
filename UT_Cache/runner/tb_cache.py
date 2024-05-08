@@ -39,8 +39,7 @@ class TestCache():
         self.cache.reset()
 
         # Test List
-        self.testlist   = ["random", "cache_hit"]
-        #self.testlist   = ["random", "seq", "cache_miss"]
+        self.testlist   = ["random", "cache_hit", "cache_miss", "seq", "mmio_serial"]
     
     def teardown_class(self):
         self.dut.finalize()
