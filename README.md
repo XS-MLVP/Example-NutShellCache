@@ -72,6 +72,7 @@ UT_Cache
 ## TBD
 1. 部分命名的修正  
 2. 连续运行`seq_test`/`random_test` + `cache_hit_test`/`cache_miss_test`时出错...（怀疑是ref_cache中的dictioinary溢出？）
+3. 迁移到MLVP平台框架（咕咕咕）
 
 ## 更新日志
 [2024.4.7]：  
