@@ -10,12 +10,6 @@ import mlvp
 import logging
 
 def test_smoke(cache_pytest_req: tuple[CacheDut, list[CovGroup]]):
-    # Settup
-    mlvp.setup_logging(
-        log_level=logging.INFO,
-        console_display=True
-    )
-
     pins, groups = cache_pytest_req
 
     pins.block_read(0x1)

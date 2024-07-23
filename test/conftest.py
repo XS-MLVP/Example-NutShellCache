@@ -4,6 +4,9 @@ from env.cache_dut import CacheDut
 from env.simpleram import SimpleRam
 from env.simplebus_wrap import *
 
+import mlvp
+import logging
+
 
 @pytest.hookimpl(trylast=True, optionalhook=True)
 def pytest_reporter_context(context, config):
@@ -16,9 +19,17 @@ def pytest_runtest_makereport(item, call):
     report = outcome.get_result()
     return process_func_coverage(item, call, report)
 
+
 @pytest.fixture()
 def cache_pytest_req(request):
     func_name = str(request._pyfuncitem).strip('<').strip('>').split(' ')[-1]
+
+    # Settup
+    mlvp.setup_logging(
+        log_level=logging.ERROR,
+        console_display=False,
+        log_file=f"report/logs/{func_name}.log"
+    )
 
     pins = CacheDut(func_name)
     mem_ram = SimpleRam(SimplebusWrapper(pins.mem_bundle), pins.xclock)
