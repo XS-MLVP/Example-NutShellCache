@@ -1,6 +1,9 @@
 import pytest
 from mlvp.reporter import *
 from env.cache_dut import CacheDut
+from env.simpleram import SimpleRam
+from env.simplebus_wrap import *
+
 
 @pytest.hookimpl(trylast=True, optionalhook=True)
 def pytest_reporter_context(context, config):
@@ -18,6 +21,9 @@ def cache_pytest_req(request):
     func_name = str(request._pyfuncitem).strip('<').strip('>').split(' ')[-1]
 
     pins = CacheDut(func_name)
+    mem_ram = SimpleRam(SimplebusWrapper(pins.mem_bundle), pins.xclock)
+    coh_ram = SimpleRam(SimplebusWrapper(pins.coh_bundle), pins.xclock)
+    mmio_ram = SimpleRam(SimplebusWrapper(pins.mmio_bundle), pins.xclock)
     groups = []
 
     yield pins, groups
