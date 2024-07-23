@@ -5,4 +5,4 @@ from mlvp.reporter import *
 if __name__ == "__main__":
     set_meta_info('test_case', 'Nutshell-Cache')
     report = "report/rpt.html"
-    generate_pytest_report(report, args=["-s", "-n=auto", "-k random"])
+    generate_pytest_report(report, args=["-s", "-n=auto"])
