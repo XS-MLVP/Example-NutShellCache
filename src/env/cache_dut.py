@@ -2,6 +2,7 @@
     Wrap up the basic operations here.
     Author: yzcc
 """
+import mlvp
 
 from picker_out.UT_Cache import DUTCache
 from .bundle import *
@@ -64,7 +65,7 @@ class CacheDut:
             self.__set_bus_valid__(self.in_bundle.req, False)
         else:
             self.__set_bus_valid__(self.in_bundle.req, True)
-            msg: ReqMsg = self.req_que.queue[0] # get a req from the queue, put to the in_bundle
+            msg: ReqMsg = self.req_que.queue[0]  # get a req from the queue, put to the in_bundle
             self.in_bundle.assign(msg.as_dict())
 
         # Handle Response

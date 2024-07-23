@@ -12,8 +12,8 @@ class ReqMsg:
         self.mask = mask
         self.data = data
 
-    def display(self):
-        print(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
+    def display(self, displayer=print):
+        displayer(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
               cmd 0x{self.cmd:x}, mask {self.mask:b}, data {self.data:x}")
 
     def set_from_dict(self, d):
@@ -54,9 +54,9 @@ class RespMsg:
     def as_dict(self):
         resp = {}
         resp["valid"] = True
-        resp["rdata"] = self.rdata
-        resp["cmd"] = self.cmd
-        resp["user"] = self.user
+        resp["bits_rdata"] = self.rdata
+        resp["bits_cmd"] = self.cmd
+        resp["bits_user"] = self.user
 
         return resp
 
