@@ -1,4 +1,8 @@
 # Nutshell Cache Verification with XS-MLVP
+**本分支已停止维护。最新版本请见mlvp分支**
+
+---
+
 基于XS-MLVP验证环境的Nutshell Cache的验证实践（python）
 
 ## Environment
