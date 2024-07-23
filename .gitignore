@@ -1,0 +1,8 @@
+*.*
+!*.py
+!*.md
+!Makefile
+!.gitignore
+!.gtkwaverc
+!pytest.ini
+picker_out/
