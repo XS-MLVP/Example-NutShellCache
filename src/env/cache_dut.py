@@ -79,8 +79,11 @@ class CacheDut:
 
     def __recv__(self):
         """ Get a resp from Resp Queue """
+        await_time = 0
         while self.resp_queue.empty():
             self.xclock.Step(1)
+            await_time += 1
+
         return self.resp_queue.get()
 
     def block_read(self, addr):

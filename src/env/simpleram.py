@@ -59,7 +59,7 @@ class SimpleRam:
         if self.bus.resp.__ready__ and self.read_index != 0:
             addr = self.read_base_addr + self.read_offset
             data = self.__ram_read__(addr)
-            cmd = CMD_READ # ?
+            cmd = CMD_READ  # ?
             if self.read_index == 1:    # last of the burst
                 cmd = CMD_READLST
 
@@ -70,14 +70,14 @@ class SimpleRam:
     def __handle_write__(self):
         if self.bus.req.__valid__ and self.bus.req.is_cmd(CMD_WRITE):
             addr = self.bus.req.__addr__
-            mask = self.bus.req.__mask__
+            mask = self.bus.req.__wmask__
             data = self.bus.req.__wdata__
             self.__ram_write__(addr, data, mask)
             self.bus.put_resp(RespMsg(CMD_WRITERSP, 0x1919810, 0x114))
 
-        if self.bus.req.__valid__ and self.bus.req.is_cmd(CMD_WRITEBST):
+        if self.bus.req.__valid__ and (self.bus.req.is_cmd(CMD_WRITEBST) or self.bus.req.is_cmd(CMD_WRITELST)):
             addr = self.bus.req.__addr__
-            mask = self.bus.req.__mask__
+            mask = self.bus.req.__wmask__
             data = self.bus.req.__wdata__
 
             if self.write_index == 0:
@@ -91,7 +91,6 @@ class SimpleRam:
             self.bus.put_resp(RespMsg(CMD_WRITERSP, data, 0x114))
             self.write_index -= 1
             self.write_offset = (self.write_offset + 8) % 64
-
 
     def __cb__(self, *a, **b):
         self.bus.resp.__valid__ = False
