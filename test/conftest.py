@@ -26,7 +26,7 @@ def cache_pytest_req(request):
 
     # Settup
     mlvp.setup_logging(
-        log_level=logging.ERROR,
+        log_level=logging.INFO,
         console_display=False,
         log_file=f"report/logs/{func_name}.log"
     )

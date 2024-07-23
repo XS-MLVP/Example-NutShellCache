@@ -16,6 +16,9 @@ def test_smoke(cache_pytest_req: tuple[CacheDut, list[CovGroup]]):
 
     pins.block_write(0x1, 0x1, 0x1)
 
+    pins.non_block_read(0x1)
+    pins.non_block_read(0x2)
+
     pins.xclock.Step(100)
     pass
 

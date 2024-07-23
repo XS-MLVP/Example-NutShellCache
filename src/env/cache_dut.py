@@ -66,7 +66,7 @@ class CacheDut:
         else:
             self.__set_bus_valid__(self.in_bundle.req, True)
             msg: ReqMsg = self.req_que.queue[0]  # get a req from the queue, put to the in_bundle
-            self.in_bundle.assign(msg.as_dict())
+            self.in_bundle.req.assign(msg.as_dict())
 
         # Handle Response
         self.__set_bus_ready__(self.in_bundle.resp, True)
