@@ -5,4 +5,5 @@
 !.gitignore
 !.gtkwaverc
 !pytest.ini
+!Cache.v
 picker_out/
