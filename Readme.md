@@ -7,28 +7,30 @@
 ## Directory
 ```
 .
-├── Cache.v                 # RTL
-├── __init__.py             # Test entrance
+├── __init__.py     # Entrance
 ├── Makefile
-├── pytest.ini              # config of pytest
+├── pytest.ini
 ├── Readme.md
+├── rtl
+│   └── Cache.v
 ├── src
 │   ├── env
 │   │   ├── bundle.py
 │   │   ├── cache_dut.py
 │   │   ├── simplebus_wrap.py
-│   │   └── simpleram.py        # simulator of SimpleRam
+│   │   └── simpleram.py
 │   ├── ref
-│   │   └── ref_cache.py        # Reference Model
+│   │   └── ref_cache.py
 │   └── utils
 │       ├── cmd_code.py
 │       └── common.py
-└── test                # test cases
-    ├── chk_mmio.py     # functional coverage checker
+└── test
+    ├── chk_miss.py
+    ├── chk_mmio.py
     ├── conftest.py     # pytest hook
+    ├── test_miss.py
     ├── test_mmio.py
     ├── test_random.py
-    ├── ...
     └── test_smoke.py
 ```
 
