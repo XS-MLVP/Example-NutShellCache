@@ -5,5 +5,5 @@
 !.gitignore
 !.gtkwaverc
 !pytest.ini
-!Cache.v
+!rtl/
 picker_out/

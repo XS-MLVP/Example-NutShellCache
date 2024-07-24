@@ -8,8 +8,6 @@ from ref.ref_cache import RefCache
 from mlvp.funcov import CovGroup
 
 import random
-import mlvp
-
 from chk_mmio import get_cov_grp_of_mmio
 
 

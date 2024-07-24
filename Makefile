@@ -7,7 +7,7 @@ RPT_DIR = report
 $(shell mkdir -p ./$(RPT_DIR))
 
 # Generate DUT
-TOP_ENTRY = ./Cache.v
+TOP_ENTRY = ./rtl/Cache.v
 TL = python
 WAVEFORM = -w cache.fst
 
