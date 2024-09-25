@@ -2,7 +2,7 @@
 
 ## Requirement
 **Picker**: https://github.com/XS-MLVP/picker  
-**MLVP**: https://github.com/XS-MLVP/mlvp
+**MLVP**: https://github.com/XS-MLVP/mlvp, version=v0.0.2
 
 ## Directory
 ```
