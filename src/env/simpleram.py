@@ -64,7 +64,7 @@ class SimpleRam:
                 cmd = CMD_READLST
 
             self.read_index -= 1
-            self.read_offset = (self.read_index + 8) % 64
+            self.read_offset = (self.read_offset + 8) % 64
             self.bus.put_resp(RespMsg(cmd, data, 0x114))
 
     def __handle_write__(self):
