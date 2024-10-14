@@ -7,3 +7,4 @@
 !pytest.ini
 !rtl/
 picker_out/
+!*.pdf
