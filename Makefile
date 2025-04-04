@@ -1,10 +1,11 @@
-PICKER = picker
-PYTHON = python3
-GTKWAVE = gtkwave
-BROWSER = google-chrome
-
-RPT_DIR = report
-$(shell mkdir -p ./$(RPT_DIR))
+VSRC_DIR    = ./rtl
+PICKER      = picker
+NAME        = Cache
+NAME_L      = cache
+SIM         = verilator
+WAVE_FORMAT = fst
+TARGET_LANG = python
+GTKWAVE 	= gtkwave
 
 # Generate DUT
 TOP_ENTRY = ./rtl/Cache.v
@@ -12,23 +13,21 @@ TL = python
 WAVEFORM = -w cache.fst
 
 gen_dut:
-	$(PICKER) export ${TOP_ENTRY} --lang ${TL} -c ${WAVEFORM}
+	$(PICKER) export --autobuild=true $(VSRC_DIR)/$(NAME).v \
+		-w $(NAME).$(WAVE_FORMAT) \
+		--sname $(NAME) \
+		--tdir $(NAME) \
+		--lang $(TARGET_LANG) \
+		--sim $(SIM) \
+		-e -c
 
-.PHONY: wave rpt test
-FILE =
-FILE_PATH = ./$(RPT_DIR)/fst/cache_test_$(FILE).fst
+.PHONY: wave test
 
 wave:
-	$(GTKWAVE) -r .gtkwaverc $(FILE_PATH)
+	$(GTKWAVE) -r .gtkwaverc $(NAME_L).$(WAVE_FORMAT)
 # Test
 test:
-	-@mkdir $(RPT_DIR)/cov_dat
-	-@mkdir $(RPT_DIR)/fst
-	-@mkdir $(RPT_DIR)/logs
-	PYTHONPATH=. $(PYTHON) __init__.py
-
-rpt:
-	$(BROWSER) ./$(RPT_DIR)/rpt.html
+	PYTHONPATH=.:./src pytest -sv
 
 clean:
-	-rm -rf report
+	-rm -rf *.dat *.fst reports
