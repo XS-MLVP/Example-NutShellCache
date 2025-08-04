@@ -20,8 +20,8 @@ async def start_func(toffee_request: toffee_test.ToffeeRequest):
         dut.io_flush.value = 0
 
         async with Executor(exit="none") as exec:
-            exec(env.usertop.req_handler(), sche_group="req_handler")
-            exec(env.usertop.rsp_handler(), sche_group="rsp_handler")
+            exec(env.in_agent.req_handler(), sche_group="req_handler")
+            exec(env.in_agent.rsp_handler(), sche_group="rsp_handler")
             exec(SimpleBusRam(env.mem_agent).work(),sche_group="mmio")
             exec(SimpleBusRam(env.mmio_agent).work(), sche_group="mem")
         return env

@@ -10,11 +10,11 @@ from base_test import *
 async def test_smoke(start_func):
     env: NtCacheEnv = await start_func()
 
-    await env.usertop.block_read(0x1)
+    await env.in_agent.block_read(0x1)
 
-    await env.usertop.block_write(0x1, 0x1, 0x1)
+    await env.in_agent.block_write(0x1, 0x1, 0x1)
 
-    await env.usertop.non_block_read(0x1)
-    await env.usertop.non_block_read(0x2)
+    await env.in_agent.non_block_read(0x1)
+    await env.in_agent.non_block_read(0x2)
 
-    res = await env.usertop.recv()
+    res = await env.in_agent.recv()

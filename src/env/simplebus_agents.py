@@ -9,6 +9,9 @@ class SimpleBusMasterAgent(Agent):
         super().__init__(bundle.step)
         self.bundle:SimpleBusBundle = bundle
 
+        self.req_que = queue.Queue()
+        self.rsp_que = queue.Queue()
+
     async def send_req(self, addr, size, cmd, user=0, wmask=0, wdata=0):
         await AllValid(self.bundle.req.ready, delay=0)
         self.bundle.req.assign({
@@ -25,13 +28,52 @@ class SimpleBusMasterAgent(Agent):
         self.bundle.rsp.ready.value = 0
         return resp
 
-    @driver_method()
     async def read(self, addr, size, user=0):
         await self.send_req(addr, size, CMD_READ, user)
 
-    @driver_method()
     async def write(self, addr, size, wdata, wmask, user=0):
         await self.send_req(addr, size, CMD_WRITE, user, wmask, wdata)
+
+    async def req_handler(self):
+        while True:
+            if self.req_que.empty():
+                await self.bundle.step()
+            else:
+                req: ReqMsg = self.req_que.get()
+                if req.cmd == CMD_READ:
+                    await self.send_req(req.addr, req.size, CMD_READ, req.user)
+                elif req.cmd == CMD_WRITE:
+                    await self.send_req(req.addr, req.size, CMD_WRITE, req.user, req.mask, req.data)
+
+    async def rsp_handler(self):
+        while True:
+            res = await self.get_resp()
+            rsp = RespMsg(rdata=res["rdata"], user=res["user"], cmd=res["cmd"])
+            self.rsp_que.put(rsp)
+
+    @driver_method()
+    async def non_block_read(self, addr):
+        self.req_que.put_nowait(ReqMsg(addr, CMD_READ))
+
+    @driver_method()
+    async def non_block_write(self, addr, data, mask):
+        self.req_que.put_nowait(ReqMsg(addr, CMD_WRITE, data, mask))
+
+    @driver_method()
+    async def recv(self):
+        while self.rsp_que.empty():
+            await self.bundle.step()
+        return self.rsp_que.get().as_dict()
+    
+    async def block_read(self, addr):
+        await self.non_block_read(addr)
+        res = await self.recv()
+        return res
+    
+    async def block_write(self, addr, data, mask):
+        await self.non_block_write(addr, data, mask)
+        res = await self.recv()
+        return res
 
 
 class SimpleBusSlaveAgent(Agent):
