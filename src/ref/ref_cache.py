@@ -30,12 +30,12 @@ class CacheRefModel(Model):
             addr, rdata = req.addr & 0xfffffff8, 0
             if addr in self.data:
                 rdata = self.data[addr]
-            return RespMsg(rdata=rdata, user=req.user, cmd=CMD_READLST).as_dict()
+            return RespMsg(rdata=rdata, cmd=CMD_READLST).as_dict()
         elif req.cmd == CMD_WRITE:
             addr = req.addr & 0xfffffff8
             wmask = replicate_bits(req.mask, 8, 8)
             if addr not in self.data:
                 self.data[addr] = 0
             self.data[addr] = (self.data[addr] & (~wmask)) | (req.data & wmask)
-            return RespMsg(rdata=0, user=req.user, cmd=CMD_WRITERSP).as_dict()
+            return RespMsg(rdata=0, cmd=CMD_WRITERSP).as_dict()
         assert False

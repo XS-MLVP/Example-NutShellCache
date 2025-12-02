@@ -12,11 +12,11 @@ class SimpleBusMasterAgent(Agent):
         self.req_que = queue.Queue()
         self.rsp_que = queue.Queue()
 
-    async def send_req(self, addr, size, cmd, user=0, wmask=0, wdata=0):
+    async def send_req(self, addr, size, cmd, wmask=0, wdata=0):
         await AllValid(self.bundle.req.ready, delay=0)
         self.bundle.req.assign({
             "valid": 1,   "addr": addr,   "size": size,  "cmd": cmd,
-            "user": user, "wmask": wmask, "wdata": wdata
+            "wmask": wmask, "wdata": wdata
         })
         await self.bundle.step()
         self.bundle.req.valid.value = 0
@@ -28,11 +28,11 @@ class SimpleBusMasterAgent(Agent):
         self.bundle.rsp.ready.value = 0
         return resp
 
-    async def read(self, addr, size, user=0):
-        await self.send_req(addr, size, CMD_READ, user)
+    async def read(self, addr, size):
+        await self.send_req(addr, size, CMD_READ)
 
-    async def write(self, addr, size, wdata, wmask, user=0):
-        await self.send_req(addr, size, CMD_WRITE, user, wmask, wdata)
+    async def write(self, addr, size, wdata, wmask):
+        await self.send_req(addr, size, CMD_WRITE, wmask, wdata)
 
     async def req_handler(self):
         while True:
@@ -41,14 +41,14 @@ class SimpleBusMasterAgent(Agent):
             else:
                 req: ReqMsg = self.req_que.get()
                 if req.cmd == CMD_READ:
-                    await self.send_req(req.addr, req.size, CMD_READ, req.user)
+                    await self.send_req(req.addr, req.size, CMD_READ)
                 elif req.cmd == CMD_WRITE:
-                    await self.send_req(req.addr, req.size, CMD_WRITE, req.user, req.mask, req.data)
+                    await self.send_req(req.addr, req.size, CMD_WRITE, req.mask, req.data)
 
     async def rsp_handler(self):
         while True:
             res = await self.get_resp()
-            rsp = RespMsg(rdata=res["rdata"], user=res["user"], cmd=res["cmd"])
+            rsp = RespMsg(rdata=res["rdata"], cmd=res["cmd"])
             self.rsp_que.put(rsp)
 
     @driver_method()
@@ -82,7 +82,7 @@ class SimpleBusSlaveAgent(Agent):
         self.bundle: SimpleBusBundle = bundle
 
     @driver_method()
-    async def read_resp(self, size, rdata: list, user=0):
+    async def read_resp(self, size, rdata: list):
         assert len(rdata) == 1 << size
         await AllValid(self.bundle.rsp.ready, delay=0)
         self.bundle.rsp.valid.value = 1
@@ -93,9 +93,9 @@ class SimpleBusSlaveAgent(Agent):
         self.bundle.rsp.valid.value = 0
 
     @driver_method()
-    async def write_resp(self, user=0):
+    async def write_resp(self):
         await AllValid(self.bundle.rsp.ready, delay=0)
-        self.bundle.rsp.assign({"valid": 1, "cmd": CMD_WRITERSP, "user": user})
+        self.bundle.rsp.assign({"valid": 1, "cmd": CMD_WRITERSP})
         await self.bundle.step()
         self.bundle.rsp.valid.value = 0
 

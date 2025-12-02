@@ -13,6 +13,7 @@ TL = python
 WAVEFORM = -w cache.fst
 
 gen_dut:
+	@rm -rf $(NAME)
 	$(PICKER) export --autobuild=true $(VSRC_DIR)/$(NAME).v \
 		-w $(NAME).$(WAVE_FORMAT) \
 		--sname $(NAME) \

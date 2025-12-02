@@ -4,8 +4,8 @@
 """
 
 class ReqMsg:
-    def __init__(self, addr, cmd, user=0x123, size=7, mask=0, data=0):
-        self.user = user
+    def __init__(self, addr, cmd, size=7, mask=0, data=0):
+
         self.size = size
         self.addr = addr
         self.cmd = cmd
@@ -13,11 +13,10 @@ class ReqMsg:
         self.data = data
 
     def display(self, displayer=print):
-        displayer(f"[REQ MSG] user {self.user:x}, size {self.size}, addr 0x{self.addr:x}\
+        displayer(f"[REQ MSG]  size {self.size}, addr 0x{self.addr:x}\
               cmd 0x{self.cmd:x}, mask {self.mask:b}, data {self.data:x}")
 
     def set_from_dict(self, d):
-        self.user = d['user']
         self.size = d['size']
         self.addr = d['addr']
         self.cmd = d['cmd']
@@ -33,15 +32,13 @@ class ReqMsg:
         req["bits_cmd"] = self.cmd
         req["bits_wmask"] = self.mask
         req["bits_wdata"] = self.data
-        req["bits_user"] = self.user
 
         return req
 
 class RespMsg:
-    def __init__(self, cmd, rdata, user):
+    def __init__(self, cmd, rdata):
         self.cmd = cmd
         self.rdata = rdata
-        self.user = user
 
     def display(self):
         print(f"[RESP MSG] cmd 0x{self.cmd}, rdata 0x{self.rdata:x}")
@@ -49,14 +46,12 @@ class RespMsg:
     def set_from_dict(self, d):
         self.rdata = d['rdata']
         self.cmd = d['cmd']
-        self.user = d['user']
 
     def as_dict(self):
         resp = {}
         resp["valid"] = True
         resp["bits_rdata"] = self.rdata
         resp["bits_cmd"] = self.cmd
-        resp["bits_user"] = self.user
 
         return resp
 
